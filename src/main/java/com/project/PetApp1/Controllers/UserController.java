@@ -2,6 +2,7 @@ package com.project.PetApp1.Controllers;
 
 import com.project.PetApp1.Entities.User;
 import com.project.PetApp1.Repositories.UserRepository;
+import com.project.PetApp1.Services.UserService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -10,45 +11,35 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    private UserRepository userRepository;
+    private UserService userService;
 
-    public UserController(UserRepository userRepository){
-        this.userRepository = userRepository;
+    public UserController(UserService userService){
+        this.userService = userService;
     }
 
     @GetMapping // for listing all of users
     public List<User> getAllUsers(){
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     @PostMapping  //for creating new user
     public User createUser(@RequestBody User newUser){
-        return userRepository.save(newUser);
+        return userService.saveOneUser(newUser);
     }
 
     @GetMapping("/{userId}")
     public User getOneUser(@PathVariable Long userId){
         //custom exception
-        return userRepository.findById(userId).orElse(null);
+        return userService.getOneUser(userId);
     }
 
     @PutMapping("/{userId}")
     public User updateOneUser(@PathVariable Long userId, @RequestBody User newUser){
-        Optional<User> user = userRepository.findById(userId);
-        if (user.isPresent()){        //if there is user this will update users informations request body will bring us user
-            User foundUser = user.get();
-            foundUser.setUserName(newUser.getUserName());
-            foundUser.setPassword(newUser.getPassword());
-            userRepository.save(foundUser);
-            return foundUser;
-        }else {
-            return null;
-
-        }
+        return userService.updateOneUser(userId, newUser);
     }
 
     @DeleteMapping("/{userId}")
     public void deleteOneUser(@PathVariable Long userId){   //pathvariable helps us to get id of user
-        userRepository.deleteById(userId);
+        userService.deleteById(userId);
     }
 }
