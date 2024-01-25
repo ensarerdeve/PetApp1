@@ -6,7 +6,9 @@ import com.project.PetApp1.Repositories.PostRepository;
 import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,28 +33,55 @@ public class PostService {
         return postRepository.findById(postId).orElse(null);
     }
 
-    public Post createOnePost(PostCreateRequest newPostRequest) {
+    public Post createOnePost(PostCreateRequest newPostRequest,  MultipartFile photo) {
         User user = userService.getOneUser(newPostRequest.getUserId());
-        if(user ==null)
+        if (user == null)
             return null;
-        Post toSave = new Post();
-        toSave.setId(newPostRequest.getId());
-        toSave.setText(newPostRequest.getText());
-        toSave.setTitle(newPostRequest.getTitle());
-        toSave.setUser(user); //userın varlığını kontrol edip o useri save edeceğimiz verinin içine atıyoruz
-        return postRepository.save(toSave);
+
+        try {
+            Post toSave = new Post();
+            toSave.setId(newPostRequest.getId());
+            toSave.setText(newPostRequest.getText());
+
+            if (photo != null && !photo.isEmpty()) {
+                toSave.setPhoto(photo.getBytes());
+            }
+
+            toSave.setUser(user);
+            return postRepository.save(toSave);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public Post updateOnePostById(Long postId, PostUpdateRequest updatePost) {
-        Optional<Post> post = postRepository.findById(postId);
-        if(post.isPresent()){
-            Post toUpdate = post.get();
-            toUpdate.setText(updatePost.getText());
-            toUpdate.setTitle(updatePost.getTitle());
-            postRepository.save(toUpdate);
-            return toUpdate;
+
+    public Post updateOnePostById(Long postId, PostUpdateRequest updatePostRequest, MultipartFile photo) {
+        Optional<Post> postOptional = postRepository.findById(postId);
+
+        if (postOptional.isPresent()) {
+            Post postToUpdate = postOptional.get();
+
+            // Güncelleme isteğindeki verileri kontrol et
+            if (updatePostRequest.getText() != null) {
+                postToUpdate.setText(updatePostRequest.getText());
+            }
+
+
+            try {
+                // Fotoğraf güncelleme isteği varsa
+                if (photo != null && !photo.isEmpty()) {
+                    postToUpdate.setPhoto(photo.getBytes());
+                }
+
+                return postRepository.save(postToUpdate);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        } else {
+            return null; // Post bulunamadı
         }
-        return null;
     }
 
     public void deleteOnePostById(Long postId) {

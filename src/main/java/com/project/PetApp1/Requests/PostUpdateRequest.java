@@ -1,9 +1,10 @@
 package com.project.PetApp1.Requests;
 
 import lombok.Data;
+import org.springframework.web.multipart.MultipartFile;
 
 @Data
 public class PostUpdateRequest {
-    String title;
     String text;
+    MultipartFile photo;
 }

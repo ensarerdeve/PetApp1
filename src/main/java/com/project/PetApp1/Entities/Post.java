@@ -12,6 +12,8 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Post {
 
     @Id
+    @GeneratedValue()
+    @Column(name = "id")
     Long id;
     @ManyToOne(fetch = FetchType.LAZY)//post objesini çektiğinde user'ı hemen çekme demek
     @JoinColumn(name = "user_id",nullable = false)
@@ -19,7 +21,9 @@ public class Post {
     @JsonIgnore
     User user;
 
-    String title;
+    @Lob
+    byte[]photo;
+
     @Lob
     @Column(columnDefinition = "text")
     String text;

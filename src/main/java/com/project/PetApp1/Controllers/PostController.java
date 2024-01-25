@@ -4,7 +4,11 @@ import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
 import com.project.PetApp1.Services.PostService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,9 +29,11 @@ import java.util.Optional;
 
     }
 
-    @PostMapping
-    public Post createOnePost(@RequestBody PostCreateRequest newPostRequest){
-        return postService.createOnePost(newPostRequest);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Post> createOnePost(@ModelAttribute PostCreateRequest newPostRequest,
+                                              @RequestPart(value = "photo", required = false) MultipartFile photo) {
+        Post createdPost = postService.createOnePost(newPostRequest, photo);
+        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
 
 
@@ -37,8 +43,17 @@ import java.util.Optional;
     }
 
     @PutMapping("/{postId}")
-    public Post updateOnePost(@PathVariable Long postId, @RequestBody PostUpdateRequest updatePost){
-        return postService.updateOnePostById(postId, updatePost);
+    public ResponseEntity<Post> updateOnePost(
+            @PathVariable Long postId,
+            @ModelAttribute PostUpdateRequest updatePostRequest,
+            @RequestPart(value = "photo", required = false) MultipartFile photo
+    ) {
+        Post updatedPost = postService.updateOnePostById(postId, updatePostRequest, photo);
+        if (updatedPost != null) {
+            return new ResponseEntity<>(updatedPost, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{postId}")
