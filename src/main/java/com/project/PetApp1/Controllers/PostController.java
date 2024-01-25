@@ -45,7 +45,5 @@ import java.util.Optional;
     public void deleteOnePost(@PathVariable Long postId){
         postService.deleteOnePostById(postId);
     }
-
-
-
+    
     }
