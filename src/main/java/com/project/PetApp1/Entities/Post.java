@@ -22,7 +22,7 @@ public class Post {
     User user;
 
     @Lob
-    byte[]photo;
+    String photo;
 
     @Lob
     @Column(columnDefinition = "text")

@@ -17,6 +17,8 @@ public class PostService {
     private PostRepository postRepository;
     private UserService userService;
 
+    private final String PhotoPath = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
+
     public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
         this.userService = userService;
@@ -34,29 +36,26 @@ public class PostService {
     }
 
     public Post createOnePost(PostCreateRequest newPostRequest,  MultipartFile photo) {
+        String photoPath = PhotoPath + photo.getOriginalFilename();
         User user = userService.getOneUser(newPostRequest.getUserId());
         if (user == null)
             return null;
 
-        try {
-            Post toSave = new Post();
-            toSave.setId(newPostRequest.getId());
-            toSave.setText(newPostRequest.getText());
+        Post toSave = new Post();
+        toSave.setId(newPostRequest.getId());
+        toSave.setText(newPostRequest.getText());
 
-            if (photo != null && !photo.isEmpty()) {
-                toSave.setPhoto(photo.getBytes());
-            }
-
-            toSave.setUser(user);
-            return postRepository.save(toSave);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+        if (photo != null && !photo.isEmpty()) {
+            toSave.setPhoto(photoPath);
         }
+
+        toSave.setUser(user);
+        return postRepository.save(toSave);
     }
 
 
     public Post updateOnePostById(Long postId, PostUpdateRequest updatePostRequest, MultipartFile photo) {
+        String photoPath = PhotoPath + photo.getOriginalFilename();
         Optional<Post> postOptional = postRepository.findById(postId);
 
         if (postOptional.isPresent()) {
@@ -68,17 +67,12 @@ public class PostService {
             }
 
 
-            try {
-                // Fotoğraf güncelleme isteği varsa
-                if (photo != null && !photo.isEmpty()) {
-                    postToUpdate.setPhoto(photo.getBytes());
-                }
-
-                return postRepository.save(postToUpdate);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
+            // Fotoğraf güncelleme isteği varsa
+            if (photo != null && !photo.isEmpty()) {
+                postToUpdate.setPhoto(photoPath);
             }
+
+            return postRepository.save(postToUpdate);
         } else {
             return null; // Post bulunamadı
         }
