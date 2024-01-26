@@ -22,7 +22,7 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)//post objesini çektiğinde user'ı hemen çekme demek
     @JoinColumn(name = "user_id",nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)//bir user silindiğinde ilgili tüm postlarını sil
+    @OnDelete(action = OnDeleteAction.CASCADE)//bir user silindiğinde ilgili tüm commentlerini sil
     @JsonIgnore
     User user;
 
