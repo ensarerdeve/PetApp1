@@ -12,13 +12,12 @@ import org.hibernate.annotations.OnDeleteAction;
 public class Post {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     Long id;
-    @ManyToOne(fetch = FetchType.LAZY)//post objesini çektiğinde user'ı hemen çekme demek
+    @ManyToOne(fetch = FetchType.EAGER)//post objesini çektiğinde user'ı hemen çek demek
     @JoinColumn(name = "user_id",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)//bir user silindiğinde ilgili tüm postlarını sil
-    @JsonIgnore
     User user;
 
     @Lob

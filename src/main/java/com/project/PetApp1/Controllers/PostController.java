@@ -3,6 +3,7 @@ package com.project.PetApp1.Controllers;
 import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
+import com.project.PetApp1.Responses.PostResponse;
 import com.project.PetApp1.Services.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,7 +25,7 @@ import java.util.Optional;
     }
 
     @GetMapping
-    public List<Post> getAllPosts(@RequestParam Optional<Long> userId){ //eğer user id gelirse idye göre postu verir eğer gelmezse default olarak hepsini getirir.
+    public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId){ //eğer user id gelirse idye göre postu verir eğer gelmezse default olarak hepsini getirir.
         return postService.getAllPosts(userId);
 
     }
