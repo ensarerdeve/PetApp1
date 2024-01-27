@@ -9,6 +9,8 @@ import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
 import com.project.PetApp1.Responses.LikeResponse;
 import com.project.PetApp1.Responses.PostResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,29 +26,40 @@ public class PostService {
     private UserService userService;
     private LikeService likeService;
 
-    //private final String PhotoPath = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto ";
+
 
     private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
-    public PostService(PostRepository postRepository, UserService userService, LikeService likeService) {
+    public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
-        this.likeService = likeService;
         this.userService = userService;
+    }
+
+    @Autowired
+    //@Lazy
+    public void setLikeService(LikeService likeService) {//like'ı tanımladık çünkü constructorda tanımladığımzda sonsuz döngüye giriyor
+        this.likeService = likeService;
     }
 
     public List<PostResponse> getAllPosts(Optional<Long> userId) {
         List<Post> list;
         if(userId.isPresent()) {
           list = postRepository.findByUserId(userId.get());
-        }
-        list = postRepository.findAll();
+        }else
+            list = postRepository.findAll();
         return list.stream().map(p-> {
-            List<LikeResponse> likes = likeService.getAllLikesWithParam(null, Optional.of(p.getId()));// postlar gelirken aynı zamanda o postun likelarını da getirdik
-            return new PostResponse(p, likes);}).collect(Collectors.toList()); // post listesini dbden aldık ve onu postresponse listesine mapledik ve onu döndük
+                List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(p.getId()));// postlar gelirken aynı zamanda o postun likelarını da getirdik
+                return new PostResponse(p, likes);}).collect(Collectors.toList()); // post listesini dbden aldık ve onu postresponse listesine mapledik ve onu döndük
 
     }
 
     public Post getOnePostById(Long postId) {
         return postRepository.findById(postId).orElse(null);
+    }
+
+    public PostResponse getOnePostByIdWithLikes(Long postId) {
+        Post post = postRepository.findById(postId).orElse(null);
+        List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(postId));
+        return new PostResponse(post, likes);
     }
 
 
