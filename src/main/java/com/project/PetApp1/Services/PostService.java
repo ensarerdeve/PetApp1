@@ -1,10 +1,13 @@
 package com.project.PetApp1.Services;
 
+import com.project.PetApp1.Entities.Like;
 import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Repositories.LikeRepository;
 import com.project.PetApp1.Repositories.PostRepository;
 import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
+import com.project.PetApp1.Responses.LikeResponse;
 import com.project.PetApp1.Responses.PostResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,12 +22,14 @@ import java.util.stream.Collectors;
 public class PostService {
     private PostRepository postRepository;
     private UserService userService;
+    private LikeService likeService;
 
     //private final String PhotoPath = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto ";
 
     private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
-    public PostService(PostRepository postRepository, UserService userService) {
+    public PostService(PostRepository postRepository, UserService userService, LikeService likeService) {
         this.postRepository = postRepository;
+        this.likeService = likeService;
         this.userService = userService;
     }
 
@@ -34,7 +39,9 @@ public class PostService {
           list = postRepository.findByUserId(userId.get());
         }
         list = postRepository.findAll();
-        return list.stream().map(p-> new PostResponse(p)).collect(Collectors.toList()); // post listesini dbden aldık ve onu postresponse listesine mapledik ve onu döndük
+        return list.stream().map(p-> {
+            List<LikeResponse> likes = likeService.getAllLikesWithParam(null, Optional.of(p.getId()));// postlar gelirken aynı zamanda o postun likelarını da getirdik
+            return new PostResponse(p, likes);}).collect(Collectors.toList()); // post listesini dbden aldık ve onu postresponse listesine mapledik ve onu döndük
 
     }
 
