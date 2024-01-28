@@ -37,7 +37,6 @@ import java.util.Optional;
         return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
     }
 
-
     @GetMapping("/{postId}")
     public Post getOnePost(@PathVariable Long postId){
         return postService.getOnePostById(postId);

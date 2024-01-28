@@ -1,10 +1,13 @@
 package com.project.PetApp1.Entities;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.util.List;
 
 @Entity
 @Table(name="user")
@@ -25,6 +28,10 @@ public class User {
     @Pattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
     String mail;
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    List<Follow> followed;
+
+
     @NotNull
     @Size(min = 6, max = 100)
     String password;
@@ -33,6 +40,10 @@ public class User {
     @Size(max = 20)
     String phone;
 
+    @Nullable
+    @Size(max = 100)
+    String bio;
+
     @NotNull
     @Size(max = 50)
     String name;
@@ -40,4 +51,9 @@ public class User {
     @NotNull
     @Size(max = 50)
     String surname;
+
+    //@Nullable
+    //@OneToMany
+    //Long follower;
+
 }

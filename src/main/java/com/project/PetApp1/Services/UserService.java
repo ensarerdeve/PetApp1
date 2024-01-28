@@ -28,6 +28,10 @@ public class UserService {
         return userRepository.findById(userId).orElse(null);
     }
 
+    public List<User> getUsersByIds(List<Long> userIds) {
+        return userRepository.findByIdIn(userIds);
+    }
+
     public User updateOneUser(Long userId, User newUser) {
         Optional<User> user = userRepository.findById(userId);
         if (user.isPresent()){        //if there is user this will update users informations request body will bring us user
@@ -35,6 +39,7 @@ public class UserService {
             foundUser.setUserName(newUser.getUserName());
             foundUser.setPassword(newUser.getPassword());
             foundUser.setMail(newUser.getMail());
+            foundUser.setBio(newUser.getBio());
             foundUser.setPhone(newUser.getPhone());
             foundUser.setName(newUser.getName());
             foundUser.setSurname(newUser.getSurname());

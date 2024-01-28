@@ -35,7 +35,6 @@ public class PostService {
     }
 
     @Autowired
-    //@Lazy
     public void setLikeService(LikeService likeService) {//like'ı tanımladık çünkü constructorda tanımladığımzda sonsuz döngüye giriyor
         this.likeService = likeService;
     }
