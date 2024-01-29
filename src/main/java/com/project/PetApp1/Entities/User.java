@@ -47,5 +47,8 @@ public class User {
     @Size(max = 50)
     String surname;
 
+    @Nullable
+    String photo;
+
 
 }

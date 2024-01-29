@@ -62,24 +62,24 @@ public class PostService {
     }
 
 
-    public Post createOnePost(PostCreateRequest newPostRequest, MultipartFile photo) {
+    public Post createOnePost(PostCreateRequest newPostRequest, MultipartFile media) {
         User user = userService.getOneUserById(newPostRequest.getUserId());
         if (user == null) {
-            // veya uygun bir hata durumu işlemini gerçekleştir
+            // veya uygun bir hata mesajı
             return null;
         }
 
-        String photoPath = uploadDirectory + File.separator + photo.getOriginalFilename();
+        String mediaPath = uploadDirectory + File.separator + media.getOriginalFilename();
 
-        transferFile(photo, photoPath);
+        transferFile(media, mediaPath);
 
         Post toSave = new Post();
         toSave.setId(newPostRequest.getId());
         toSave.setText(newPostRequest.getText());
         toSave.setUser(user);
 
-        if (photo != null && !photo.isEmpty()) {
-            toSave.setPhoto(photoPath);
+        if (media != null && !media.isEmpty()) {
+            toSave.setPhoto(mediaPath);
         }
 
         return postRepository.save(toSave);
