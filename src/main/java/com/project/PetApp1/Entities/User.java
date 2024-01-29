@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.List;
 
 @Entity
 @Table(name="user")
@@ -27,10 +26,6 @@ public class User {
     @Size(max = 255)
     @Pattern(regexp = "[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
     String mail;
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    List<Follow> followed;
-
 
     @NotNull
     @Size(min = 6, max = 100)
@@ -52,8 +47,5 @@ public class User {
     @Size(max = 50)
     String surname;
 
-    //@Nullable
-    //@OneToMany
-    //Long follower;
 
 }
