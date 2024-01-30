@@ -38,7 +38,6 @@ public class UserController {
 
     @GetMapping("/{userId}")
     public User getOneUser(@PathVariable Long userId){
-        //custom exception
         return userService.getOneUserById(userId);
     }
 
