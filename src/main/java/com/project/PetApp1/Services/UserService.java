@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private String ppStorage = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
+    private String ppStorage = "C:\\Users\\burak\\OneDrive\\Masaüstü\\source\\profilepics";
 
     private UserRepository userRepository;
 
