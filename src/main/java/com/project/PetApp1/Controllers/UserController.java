@@ -1,9 +1,17 @@
 package com.project.PetApp1.Controllers;
 
+import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Entities.User;
 import com.project.PetApp1.Repositories.UserRepository;
+import com.project.PetApp1.Requests.PostUpdateRequest;
+import com.project.PetApp1.Requests.UserCreateRequest;
+import com.project.PetApp1.Requests.UserUpdateRequest;
 import com.project.PetApp1.Services.UserService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,9 +30,10 @@ public class UserController {
         return userService.getAllUsers();
     }
 
-    @PostMapping  //for creating new user
-    public User createUser(@RequestBody User newUser){
-        return userService.saveOneUser(newUser);
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> createUser(@ModelAttribute UserCreateRequest newUserRequest, @RequestPart("photo") MultipartFile photo) {
+        User createdUser = userService.saveOneUser(newUserRequest, photo);
+        return new ResponseEntity<>(createdUser, HttpStatus.CREATED);
     }
 
     @GetMapping("/{userId}")
@@ -34,8 +43,17 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    public User updateOneUser(@PathVariable Long userId, @RequestBody User newUser){
-        return userService.updateOneUser(userId, newUser);
+    public ResponseEntity<User> updateOneUser(
+            @PathVariable Long userId,
+            @ModelAttribute UserUpdateRequest userUpdateRequest,
+            @RequestPart(value = "photo", required = false) MultipartFile photo
+    ) {
+        User updatedUser = userService.updateOneUser(userId,userUpdateRequest,photo);
+        if (updatedUser != null) {
+            return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @DeleteMapping("/{userId}")
