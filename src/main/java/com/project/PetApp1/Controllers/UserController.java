@@ -6,7 +6,9 @@ import com.project.PetApp1.Repositories.UserRepository;
 import com.project.PetApp1.Requests.PostUpdateRequest;
 import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
+import com.project.PetApp1.Responses.UserResponse;
 import com.project.PetApp1.Services.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,12 +23,13 @@ import java.util.Optional;
 public class UserController {
     private UserService userService;
 
+    @Autowired
     public UserController(UserService userService){
         this.userService = userService;
     }
 
     @GetMapping // for listing all of users
-    public List<User> getAllUsers(){
+    public List<UserResponse> getAllUsers(){
         return userService.getAllUsers();
     }
 
