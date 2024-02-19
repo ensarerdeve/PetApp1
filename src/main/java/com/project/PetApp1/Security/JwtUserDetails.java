@@ -1,4 +1,3 @@
-/*
 package com.project.PetApp1.Security;
 
 import com.project.PetApp1.Entities.User;
@@ -16,7 +15,7 @@ import java.util.List;
 @Setter
 public class JwtUserDetails implements UserDetails {
 
-    Long id;
+    public Long id;
     private String username;
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
@@ -54,4 +53,3 @@ public class JwtUserDetails implements UserDetails {
         return true;
     }
 }
-*/
