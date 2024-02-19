@@ -7,6 +7,9 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.List;
+import java.util.Set;
+
 
 @Entity
 @Table(name="user")
@@ -49,6 +52,12 @@ public class User {
 
     @Nullable
     String photo;
+
+    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
+    Set<Follow> following;
+
+    @OneToMany(mappedBy = "followedUser", fetch = FetchType.LAZY)
+    Set<Follow> followers;
 
 
 }

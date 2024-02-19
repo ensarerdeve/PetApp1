@@ -28,7 +28,7 @@ public class PostService {
 
 
 
-    private String uploadDirectory = "C:\\src\\flutter_projects\\PetAppFD\\petappgiris\\assets\\images";
+    private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
     public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
         this.userService = userService;

@@ -4,6 +4,7 @@ import com.project.PetApp1.Entities.User;
 import com.project.PetApp1.Repositories.UserRepository;
 import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
+import com.project.PetApp1.Responses.UserResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,11 +12,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
 
-    private String ppStorage = "C:\\Users\\burak\\OneDrive\\Masaüstü\\source\\profilepics";
+    private String ppStorage = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
 
     private UserRepository userRepository;
 
@@ -23,8 +25,11 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::mapUserToUserResponse)
+                .collect(Collectors.toList());
     }
 
     public User saveOneUser(UserCreateRequest newUserRequest, MultipartFile photo) {
@@ -100,4 +105,19 @@ public class UserService {
     public void deleteById(Long userId) {
         userRepository.deleteById(userId);
     }
+
+    private UserResponse mapUserToUserResponse(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUserName(user.getUserName());
+        userResponse.setMail(user.getMail());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setPhone(user.getPhone());
+        userResponse.setBio(user.getBio());
+        userResponse.setName(user.getName());
+        userResponse.setSurname(user.getSurname());
+        userResponse.setPhoto(user.getPhoto());
+        return userResponse;
+    }
 }
+
