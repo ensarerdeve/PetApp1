@@ -32,17 +32,6 @@ public class FollowService {
         return response;
     }
 
-    /*public Set<FollowResponse> getAllFollowsWithParam(Long followerId) {
-        Set<Follow> follows;
-        if (followerId != null) {
-            follows = followRepository.findByFollowerId(followerId);
-        } else {
-            follows = new HashSet<>(followRepository.findAll());
-        }
-        return follows.stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toSet());
-    }*/
 
     public Follow createFollow(FollowCreateRequest followCreateRequest) {
         User follower = userService.getOneUserById(followCreateRequest.getFollowerId());
