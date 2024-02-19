@@ -1,6 +1,8 @@
 package com.project.PetApp1.Services;
 
+import com.project.PetApp1.Entities.Follow;
 import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Repositories.FollowRepository;
 import com.project.PetApp1.Repositories.UserRepository;
 import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
@@ -10,8 +12,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,16 +24,24 @@ public class UserService {
     private String ppStorage = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
 
     private UserRepository userRepository;
+    private FollowRepository followRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, FollowRepository followRepository) {
         this.userRepository = userRepository;
+        this.followRepository = followRepository;
     }
 
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(this::mapUserToUserResponse)
-                .collect(Collectors.toList());
+
+        List<UserResponse> responses = new ArrayList<>();
+        for (User user : users) {
+            Set<Follow> follows = followRepository.findByFollowerId(user.getId());
+            Set<Follow> followers = followRepository.findByFollowedUserId(user.getId());
+            responses.add(mapToResponse(user, follows, followers));
+        }
+
+        return responses;
     }
 
     public User saveOneUser(UserCreateRequest newUserRequest, MultipartFile photo) {
@@ -106,18 +118,31 @@ public class UserService {
         userRepository.deleteById(userId);
     }
 
-    private UserResponse mapUserToUserResponse(User user) {
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(user.getId());
-        userResponse.setUserName(user.getUserName());
-        userResponse.setMail(user.getMail());
-        userResponse.setPassword(user.getPassword());
-        userResponse.setPhone(user.getPhone());
-        userResponse.setBio(user.getBio());
-        userResponse.setName(user.getName());
-        userResponse.setSurname(user.getSurname());
-        userResponse.setPhoto(user.getPhoto());
-        return userResponse;
+    public UserResponse mapToResponse(User user, Set<Follow> follows, Set<Follow> followers) {
+        UserResponse response = new UserResponse();
+        response.setId(user.getId());
+        response.setUserName(user.getUserName());
+        response.setMail(user.getMail());
+        response.setPassword(user.getPassword());
+        response.setPhone(user.getPhone());
+        response.setBio(user.getBio());
+        response.setName(user.getName());
+        response.setSurname(user.getSurname());
+        response.setPhoto(user.getPhoto());
+
+        Set<String> followingUserNames = follows.stream()
+                .map(follow -> follow.getFollowedUser().getUserName())
+                .collect(Collectors.toSet());
+
+        Set<String> followerUserNames = followers.stream()
+                .map(follow -> follow.getFollower().getUserName())
+                .collect(Collectors.toSet());
+
+        response.setFollowing(followingUserNames);
+        response.setFollowers(followerUserNames);
+
+        return response;
     }
+
 }
 

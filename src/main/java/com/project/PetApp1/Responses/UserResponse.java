@@ -14,5 +14,7 @@ public class UserResponse {
      String name;
      String surname;
      String photo;
+     Set<String> followers;
+     Set<String> following;
 
 }
