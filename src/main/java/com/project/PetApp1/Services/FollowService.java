@@ -34,8 +34,8 @@ public class FollowService {
 
 
     public Follow createFollow(FollowCreateRequest followCreateRequest) {
-        User follower = userService.getOneUserById(followCreateRequest.getFollowerId());
-        User followedUser = userService.getOneUserById(followCreateRequest.getFollowedUserId());
+        User follower = (User) userService.getOneUserById(followCreateRequest.getFollowerId());
+        User followedUser = (User) userService.getOneUserById(followCreateRequest.getFollowedUserId());
 
         // Veritabanında takip edilen kullanıcının mevcut olup olmadığını kontrol edin
         Follow existingFollow = followRepository.findByFollowerAndFollowedUser(follower, followedUser);
@@ -71,10 +71,10 @@ public class FollowService {
                 .collect(Collectors.toSet());
     }
 
-    public Set<String> getAllFollowersOfUser(Long userId) {
+    public Set<FollowResponse> getAllFollowersOfUser(Long userId) {
         Set<Follow> followers = followRepository.findByFollowedUserId(userId);
         return followers.stream()
-                .map(follow -> follow.getFollower().getUserName())
+                .map(this::mapToResponse)
                 .collect(Collectors.toSet());
     }
 }

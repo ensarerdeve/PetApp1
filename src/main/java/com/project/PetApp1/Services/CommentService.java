@@ -6,11 +6,13 @@ import com.project.PetApp1.Entities.User;
 import com.project.PetApp1.Repositories.CommentRepository;
 import com.project.PetApp1.Requests.CommentCreateRequest;
 import com.project.PetApp1.Requests.CommentUpdateRequest;
+import com.project.PetApp1.Responses.CommentResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentService {
@@ -26,19 +28,22 @@ public class CommentService {
         this.postService = postService;
     }
 
-    public List<Comment> getAllCommentsWithParam(Optional<Long> userId, Optional<Long> postId) {
-        if(userId.isPresent() && postId.isPresent()){
-            return commentRepository.findByUserIdAndPostId(userId.get(),postId.get());
-        } else if (userId.isPresent()) {
-            return commentRepository.findByUserId(userId.get());
-        } else if (postId.isPresent()) {
-            return commentRepository.findByPostId(postId.get());
-        }else
-            return commentRepository.findAll();
+    public List<CommentResponse> getAllCommentsWithParam() {
+        List<Comment> comments = commentRepository.findAll();
+        return comments.stream()
+                .map(comment -> new CommentResponse(comment.getId(), comment.getText(), comment.getUser().getUserName(), comment.getPost().getId()))
+                .collect(Collectors.toList());
     }
 
-    public Comment getOneCommentById(Long commentId) {
-        return commentRepository.findById(commentId).orElse(null);
+    public CommentResponse getOneCommentById(Long commentId) {
+        Comment comment = commentRepository.findById(commentId).orElse(null);
+        if (comment != null) {
+            String userName = comment.getUser().getUserName(); // Kullanıcı adını al
+            Long postId = comment.getPost().getId();
+            return new CommentResponse(comment.getId(), comment.getText(), userName, postId);
+        } else {
+            return null;
+        }
     }
 
     public Comment createOneComment(CommentCreateRequest request) {

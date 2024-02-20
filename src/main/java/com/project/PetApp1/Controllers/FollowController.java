@@ -31,7 +31,7 @@ public class FollowController {
     }
 
     @GetMapping("/followers/{userId}")
-    public Set<String> getAllFollowersOfUser(@PathVariable Long userId){
+    public Set<FollowResponse> getAllFollowersOfUser(@PathVariable Long userId){
         return followService.getAllFollowersOfUser(userId);
     }
 

@@ -55,34 +55,21 @@ public class PostService {
         return postRepository.findById(postId).orElse(null);
     }
 
-    public PostResponse getOnePostByIdWithLikes(Long postId) {
-        Post post = postRepository.findById(postId).orElse(null);
-        List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(postId));
-        return new PostResponse(post, likes);
-    }
 
-
-    public Post createOnePost(PostCreateRequest newPostRequest, MultipartFile media) {
+    public PostResponse createOnePost(PostCreateRequest newPostRequest, MultipartFile media) throws IOException {
         User user = userService.getOneUserById(newPostRequest.getUserId());
-        if (user == null) {
-            // veya uygun bir hata mesajı
-            return null;
+        if (user != null) {
+            String mediaPath = uploadDirectory + File.separator + media.getOriginalFilename();
+            media.transferTo(new File(mediaPath)); // Dosyayı kopyala
+            Post postToSave = new Post();
+            postToSave.setText(newPostRequest.getText());
+            postToSave.setUser(user);
+            postToSave.setPhoto(mediaPath);
+            Post savedPost = postRepository.save(postToSave);
+            return new PostResponse(savedPost);
+        } else {
+            return null; // Kullanıcı bulunamadı
         }
-
-        String mediaPath = uploadDirectory + File.separator + media.getOriginalFilename();
-
-        transferFile(media, mediaPath);
-
-        Post toSave = new Post();
-        toSave.setId(newPostRequest.getId());
-        toSave.setText(newPostRequest.getText());
-        toSave.setUser(user);
-
-        if (media != null && !media.isEmpty()) {
-            toSave.setPhoto(mediaPath);
-        }
-
-        return postRepository.save(toSave);
     }
 
     private void transferFile(MultipartFile file, String destinationPath) { //uploadladığımız herhangi bir yerdeki fotoğrafı belirlerdiğimiz pathe getirmek için
@@ -94,38 +81,22 @@ public class PostService {
     }
 
 
-    public Post updateOnePostById(Long postId, PostUpdateRequest updatePostRequest, MultipartFile photo) {
+    public PostResponse updateOnePostById(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile media) throws IOException {
         Optional<Post> postOptional = postRepository.findById(postId);
-
         if (postOptional.isPresent()) {
             Post postToUpdate = postOptional.get();
-
-
-            if (updatePostRequest.getText() != null) {
-                postToUpdate.setText(updatePostRequest.getText());
+            if (postUpdateRequest.getText() != null) {
+                postToUpdate.setText(postUpdateRequest.getText());
             }
-
-            // Fotoğraf güncelleme isteği varsa
-            if (photo != null && !photo.isEmpty()) {
-                // Yeni dosya adı oluştur
-                String newPhotoPath = uploadDirectory + File.separator + photo.getOriginalFilename();
-
-                // Dosyayı kopyala
-                transferFile(photo, newPhotoPath);
-
-                // Eski dosyayı sil (bunu yapıyoruz ki dosyalar fazla yer tutmasın update yaptıktan sonra eski dosyayı siliyor)
-                if (postToUpdate.getPhoto() != null) {
-                    File oldFile = new File(postToUpdate.getPhoto());
-                    oldFile.delete();
-                }
-
-                // Yeni dosya adını güncelle
-                postToUpdate.setPhoto(newPhotoPath);
+            if (media != null && !media.isEmpty()) {
+                String mediaPath = uploadDirectory + File.separator + media.getOriginalFilename();
+                media.transferTo(new File(mediaPath)); // Dosyayı kopyala
+                postToUpdate.setPhoto(mediaPath);
             }
-
-            return postRepository.save(postToUpdate);
+            Post updatedPost = postRepository.save(postToUpdate);
+            return new PostResponse(updatedPost);
         } else {
-            return null; // Post bulunamadı
+            return null; // Gönderi bulunamadı
         }
     }
 

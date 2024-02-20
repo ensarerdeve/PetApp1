@@ -40,8 +40,8 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getOneUser(@PathVariable Long userId){
-        return userService.getOneUserById(userId);
+    public List<UserResponse> getOneUser(@PathVariable Long userId){
+        return userService.getUserDataById(userId);
     }
 
     @PutMapping("/{userId}")
