@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,30 +26,32 @@ import java.util.Optional;
     }
 
     @GetMapping
-    public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId){ //eğer user id gelirse idye göre postu verir eğer gelmezse default olarak hepsini getirir.
+    public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId){
         return postService.getAllPosts(userId);
 
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Post> createOnePost(@ModelAttribute PostCreateRequest newPostRequest,
-                                              @RequestPart(value = "photo", required = false) MultipartFile photo) {
-        Post createdPost = postService.createOnePost(newPostRequest, photo);
-        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+    public ResponseEntity<PostResponse> createOnePost(@ModelAttribute PostCreateRequest newPostRequest,
+                                                      @RequestPart(value = "photo", required = false) MultipartFile photo) throws IOException {
+        PostResponse createdPost = postService.createOnePost(newPostRequest, photo);
+        if (createdPost != null) {
+            return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
     }
-
     @GetMapping("/{postId}")
     public Post getOnePost(@PathVariable Long postId){
         return postService.getOnePostById(postId);
     }
 
     @PutMapping("/{postId}")
-    public ResponseEntity<Post> updateOnePost(
+    public ResponseEntity<PostResponse> updateOnePost(
             @PathVariable Long postId,
             @ModelAttribute PostUpdateRequest updatePostRequest,
-            @RequestPart(value = "photo", required = false) MultipartFile photo
-    ) {
-        Post updatedPost = postService.updateOnePostById(postId, updatePostRequest, photo);
+            @RequestPart(value = "photo", required = false) MultipartFile photo) throws IOException {
+        PostResponse updatedPost = postService.updateOnePostById(postId, updatePostRequest, photo);
         if (updatedPost != null) {
             return new ResponseEntity<>(updatedPost, HttpStatus.OK);
         } else {
