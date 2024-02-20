@@ -12,10 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,6 +63,18 @@ public class UserService {
 
     public User getOneUserById(Long userId) {
         return userRepository.findById(userId).orElse(null);
+    }
+
+    public List<UserResponse> getUserDataById(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Set<Follow> follows = followRepository.findByFollowerId(user.getId());
+            Set<Follow> followers = followRepository.findByFollowedUserId(user.getId());
+            return Collections.singletonList(mapToResponse(user, follows, followers));
+        } else {
+            return Collections.emptyList();
+        }
     }
 
 
