@@ -27,17 +27,16 @@ public class FollowService {
     private FollowResponse mapToResponse(Follow follow) {
         FollowResponse response = new FollowResponse();
         response.setId(follow.getId());
-        response.setFollowedUserName(follow.getFollowedUser().getUserName()); // Followed user'ın username'ini al
-        response.setFollowerUserName(follow.getFollower().getUserName()); // Follower'ın username'ini al
+        response.setFollowedUserName(follow.getFollowedUser().getUserName());
+        response.setFollowerUserName(follow.getFollower().getUserName());
         return response;
     }
 
 
-    public Follow createFollow(FollowCreateRequest followCreateRequest) {
-        User follower = (User) userService.getOneUserById(followCreateRequest.getFollowerId());
-        User followedUser = (User) userService.getOneUserById(followCreateRequest.getFollowedUserId());
+    public FollowResponse createFollow(FollowCreateRequest followCreateRequest) {
+        User follower = userService.getOneUserById(followCreateRequest.getFollowerId());
+        User followedUser = userService.getOneUserById(followCreateRequest.getFollowedUserId());
 
-        // Veritabanında takip edilen kullanıcının mevcut olup olmadığını kontrol edin
         Follow existingFollow = followRepository.findByFollowerAndFollowedUser(follower, followedUser);
         if (existingFollow != null) {
             throw new IllegalArgumentException("Bu kullanıcıyı zaten takip ediyorsunuz.");
@@ -47,7 +46,17 @@ public class FollowService {
             Follow followToSave = new Follow();
             followToSave.setFollowedUser(followedUser);
             followToSave.setFollower(follower);
-            return followRepository.save(followToSave);
+
+            Follow savedFollow = followRepository.save(followToSave);
+
+            FollowResponse response = new FollowResponse();
+            response.setId(savedFollow.getId());
+            response.setFollowedUserName(savedFollow.getFollowedUser().getUserName());
+            response.setFollowerUserName(savedFollow.getFollower().getUserName());
+
+            return response;
+
+
         } else {
             throw new IllegalArgumentException("Takip eden veya takip edilen kullanıcı bulunamadı.");
         }
