@@ -1,5 +1,6 @@
 package com.project.PetApp1.Responses;
 
+import com.project.PetApp1.Entities.Follow;
 import lombok.Data;
 
 import java.util.Set;
@@ -14,7 +15,7 @@ public class UserResponse {
      String name;
      String surname;
      String photo;
-     Set<String> followers;
-     Set<String> following;
+     Set<FollowResponse> followers;
+     Set<FollowResponse> following;
 
 }

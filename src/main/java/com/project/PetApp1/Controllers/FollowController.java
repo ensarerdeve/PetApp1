@@ -36,7 +36,7 @@ public class FollowController {
     }
 
     @PostMapping
-    public Follow createFollow (@RequestBody FollowCreateRequest followCreateRequest){
+    public FollowResponse createFollow (@RequestBody FollowCreateRequest followCreateRequest){
         return followService.createFollow(followCreateRequest);
     }
 
