@@ -6,6 +6,7 @@ import com.project.PetApp1.Repositories.FollowRepository;
 import com.project.PetApp1.Repositories.UserRepository;
 import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
+import com.project.PetApp1.Responses.FollowResponse;
 import com.project.PetApp1.Responses.UserResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -139,16 +140,28 @@ public class UserService {
         response.setSurname(user.getSurname());
         response.setPhoto(user.getPhoto());
 
-        Set<String> followingUserNames = follows.stream()
-                .map(follow -> follow.getFollowedUser().getUserName())
+        Set<FollowResponse> followingResponse = follows.stream()
+                .map(follow -> {
+                    FollowResponse followResponse = new FollowResponse();
+                    followResponse.setId(follow.getId());
+                    followResponse.setFollowerUserName(follow.getFollower().getUserName());
+                    followResponse.setFollowedUserName(follow.getFollowedUser().getUserName());
+                    return followResponse;
+                })
                 .collect(Collectors.toSet());
 
-        Set<String> followerUserNames = followers.stream()
-                .map(follow -> follow.getFollower().getUserName())
+        Set<FollowResponse> followerResponse = followers.stream()
+                .map(follow -> {
+                    FollowResponse followResponse = new FollowResponse();
+                    followResponse.setId(follow.getId());
+                    followResponse.setFollowerUserName(follow.getFollower().getUserName());
+                    followResponse.setFollowedUserName(follow.getFollowedUser().getUserName());
+                    return followResponse;
+                })
                 .collect(Collectors.toSet());
 
-        response.setFollowing(followingUserNames);
-        response.setFollowers(followerUserNames);
+        response.setFollowing(followingResponse);
+        response.setFollowers(followerResponse);
 
         return response;
     }
