@@ -28,7 +28,7 @@ public class PostService {
 
 
 
-    private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
+    private String uploadDirectory = "C:\\Users\\burak\\OneDrive\\Masaüstü\\source";
     public PostService(PostRepository postRepository, UserService userService) {
         this.postRepository = postRepository;
         this.userService = userService;
