@@ -26,8 +26,8 @@ import java.util.Optional;
     }
 
     @GetMapping
-    public List<PostResponse> getAllPosts(@RequestParam Optional<Long> userId){
-        return postService.getAllPosts(userId);
+    public List<PostResponse> getAllPosts(){
+        return postService.getAllPosts();
 
     }
 
@@ -41,9 +41,9 @@ import java.util.Optional;
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
-    @GetMapping("/{postId}")
-    public Post getOnePost(@PathVariable Long postId){
-        return postService.getOnePostById(postId);
+    @GetMapping("/{userId}")
+    public List<PostResponse> getOnePost(@PathVariable Long userId){
+        return postService.getOnePostByUserId(userId);
     }
 
     @PutMapping("/{postId}")
