@@ -14,6 +14,7 @@ public class PostResponse {
     String photo;
     String text;
     List<LikeResponse> postLikes;
+    List<CommentResponse> comments;
     public PostResponse(Post entity) {
         this.id = entity.getId();
         this.userId = entity.getUser().getId();
@@ -22,8 +23,10 @@ public class PostResponse {
         this.photo = entity.getPhoto();
     }
 
-    public PostResponse(Post entity, List<LikeResponse> likes){
+    public PostResponse(Post entity, List<LikeResponse> likes, List<CommentResponse> comments){
         this(entity); // Önceki yapılandırıcıyı çağırarak tekrar kod tekrarını önleriz
         this.postLikes = likes;
+        this.comments = comments;
     }
+
 }
