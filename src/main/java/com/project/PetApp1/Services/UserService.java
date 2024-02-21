@@ -166,5 +166,8 @@ public class UserService {
         return response;
     }
 
+    public User getOneUserByUsername(String userName) {
+        return userRepository.findByUserName(userName);
+    }
 }
 
