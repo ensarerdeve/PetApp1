@@ -86,11 +86,7 @@ public class PostService {
         List<CommentResponse> comments = commentService.getAllCommentsByPostId(postId);
         return new PostResponse(post,likes,comments);
     }
-
-    public Post getOnePostById(Long postId) {
-        return postRepository.findById(postId).orElse(null);
-    }
-
+    
     public PostResponse createOnePost(PostCreateRequest newPostRequest, MultipartFile media) throws IOException {
         User user = userService.getOneUserById(newPostRequest.getUserId());
         if (user != null) {
@@ -104,14 +100,6 @@ public class PostService {
             return new PostResponse(savedPost);
         } else {
             return null; // Kullanıcı bulunamadı
-        }
-    }
-
-    private void transferFile(MultipartFile file, String destinationPath) { //uploadladığımız herhangi bir yerdeki fotoğrafı belirlerdiğimiz pathe getirmek için
-        try {
-            file.transferTo(new File(destinationPath));
-        } catch (IOException e) {
-            throw new RuntimeException("Dosya transferi sırasında bir hata oluştu.", e);
         }
     }
 

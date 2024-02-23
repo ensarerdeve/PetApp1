@@ -27,7 +27,7 @@ public class JwtUserDetails implements UserDetails {
         this.authorities = authorities;
     }
 
-    public static JwtUserDetails create(User user){ //entity olan user objesini userdetailse çevirdik amaç bu user'ın authory kontrolunu sağlamak
+    public static JwtUserDetails create(User user){
         List<GrantedAuthority> authoritesList = new ArrayList<>();
         authoritesList.add(new SimpleGrantedAuthority("user"));
         return new JwtUserDetails(user.getId(), user.getUserName(), user.getPassword(), authoritesList);
