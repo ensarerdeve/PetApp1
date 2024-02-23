@@ -17,4 +17,5 @@ public class UserResponse {
      String photo;
      Set<FollowResponse> followers;
      Set<FollowResponse> following;
+
 }
