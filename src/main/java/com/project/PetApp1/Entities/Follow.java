@@ -3,6 +3,8 @@ package com.project.PetApp1.Entities;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "follow")
 @Data
@@ -20,4 +22,7 @@ public class Follow {
     @JoinColumn(name = "followed_user_id")
     User followedUser;
 
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
 }

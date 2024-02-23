@@ -1,9 +1,7 @@
 package com.project.PetApp1.Controllers;
 
-import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Entities.User;
-import com.project.PetApp1.Repositories.UserRepository;
-import com.project.PetApp1.Requests.PostUpdateRequest;
+import com.project.PetApp1.Exceptions.UserNotFoundException;
 import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
 import com.project.PetApp1.Responses.UserResponse;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -44,6 +41,11 @@ public class UserController {
         return userService.getUserDataById(userId);
     }
 
+    @GetMapping("/activity/{userId}")
+    public List<Object> getUserActivity(@PathVariable Long userId){
+        return userService.getUserActivity(userId);
+    }
+
     @PutMapping("/{userId}")
     public ResponseEntity<User> updateOneUser(
             @PathVariable Long userId,
@@ -62,4 +64,5 @@ public class UserController {
     public void deleteOneUser(@PathVariable Long userId){   //pathvariable helps us to get id of user
         userService.deleteById(userId);
     }
+
 }

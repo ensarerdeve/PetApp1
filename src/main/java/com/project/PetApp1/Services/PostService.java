@@ -29,15 +29,21 @@ public class PostService {
     private PostRepository postRepository;
     private UserService userService;
     private CommentRepository commentRepository;
+
+    @Autowired
+    @Lazy
+    private CommentService commentService;
     private LikeService likeService;
 
 
 
     private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
-    public PostService(PostRepository postRepository, UserService userService, CommentRepository commentRepository) {
+    @Autowired
+    public PostService(PostRepository postRepository, UserService userService, CommentRepository commentRepository, CommentService commentService) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userService = userService;
+        this.commentService =commentService;
     }
 
     @Autowired
@@ -74,7 +80,12 @@ public class PostService {
 
     }
 
-
+    public PostResponse getOnePostByPostId(Long postId) {
+        Post post = postRepository.findById(postId).orElse(null);
+        List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null),Optional.of(postId));
+        List<CommentResponse> comments = commentService.getAllCommentsByPostId(postId);
+        return new PostResponse(post,likes,comments);
+    }
 
     public Post getOnePostById(Long postId) {
         return postRepository.findById(postId).orElse(null);

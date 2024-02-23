@@ -4,12 +4,14 @@ import com.project.PetApp1.Entities.Comment;
 import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Entities.User;
 import com.project.PetApp1.Repositories.CommentRepository;
+import com.project.PetApp1.Repositories.PostRepository;
 import com.project.PetApp1.Requests.CommentCreateRequest;
 import com.project.PetApp1.Requests.CommentUpdateRequest;
 import com.project.PetApp1.Responses.CommentResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,13 +21,13 @@ public class CommentService {
 
     private CommentRepository commentRepository;
     private UserService userService;
-    private PostService postService;
+    private PostRepository postRepository;
 
 
-    public CommentService(CommentRepository commentRepository, UserService userService, PostService postService) {
+    public CommentService(CommentRepository commentRepository, UserService userService, PostRepository postRepository) {
         this.commentRepository = commentRepository;
         this.userService = userService;
-        this.postService = postService;
+        this.postRepository = postRepository;
     }
 
     public List<CommentResponse> getAllCommentsWithParam() {
@@ -38,7 +40,7 @@ public class CommentService {
     public CommentResponse getOneCommentById(Long commentId) {
         Comment comment = commentRepository.findById(commentId).orElse(null);
         if (comment != null) {
-            String userName = comment.getUser().getUserName(); // Kullanıcı adını al
+            String userName = comment.getUser().getUserName();
             Long postId = comment.getPost().getId();
             return new CommentResponse(comment.getId(), comment.getText(), userName, postId);
         } else {
@@ -46,16 +48,24 @@ public class CommentService {
         }
     }
 
+    public List<CommentResponse> getAllCommentsByPostId(Long postId){
+        List<Comment> list = commentRepository.findByPostId(postId);
+        return list.stream()
+                .map(comment -> new CommentResponse(comment.getId(), comment.getText(), comment.getUser().getUserName(), comment.getPost().getId()))
+                .collect(Collectors.toList());
+    }
+
     public Comment createOneComment(CommentCreateRequest request) {
         User user = userService.getOneUserById(request.getUserId());
-        Post post = postService.getOnePostById(request.getPostId());
+        Post post = postRepository.findById(request.getPostId()).orElse(null);
         if (user != null && post != null){
-            Comment commentToSave = new Comment(); //Comment objesinden yeni bir comment oluşturuyoruz.
+            Comment commentToSave = new Comment();
             commentToSave.setId(request.getId());
-            commentToSave.setPost(post); //post ve user dbden geleceği için request demiyoruz.
+            commentToSave.setPost(post);
             commentToSave.setUser(user);
             commentToSave.setText(request.getText());
-            return commentRepository.save(commentToSave); //savelediğimiz objeyi dönüyoruz
+            commentToSave.setCreateDate(new Date());
+            return commentRepository.save(commentToSave);
         }
         else
             return null;
@@ -66,6 +76,7 @@ public class CommentService {
         if (comment.isPresent()){
             Comment commentToUpdate = comment.get();
             commentToUpdate.setText(request.getText());
+            commentToUpdate.setCreateDate(new Date());
             return commentRepository.save(commentToUpdate);
 
         }else

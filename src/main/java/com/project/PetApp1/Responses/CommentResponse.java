@@ -16,9 +16,4 @@ public class CommentResponse {
         this.postId = postId;
     }
 
-    public CommentResponse(Long id, String comment, String userName) {
-        this.id = id;
-        this.comment = comment;
-        this.userName = userName;
-    }
 }

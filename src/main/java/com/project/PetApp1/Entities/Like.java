@@ -6,6 +6,8 @@ import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import java.util.Date;
+
 @Entity
 @Data
 @Table(name = "p_like")
@@ -25,4 +27,7 @@ public class Like {
     @OnDelete(action = OnDeleteAction.CASCADE)//bir user silindiğinde ilgili tüm postlarını sil
     @JsonIgnore
     User user;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
 }
