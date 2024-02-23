@@ -46,6 +46,7 @@ public class FollowService {
             Follow followToSave = new Follow();
             followToSave.setFollowedUser(followedUser);
             followToSave.setFollower(follower);
+            followToSave.setCreateDate(new Date());
 
             Follow savedFollow = followRepository.save(followToSave);
 

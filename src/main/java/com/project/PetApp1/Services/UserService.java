@@ -1,14 +1,21 @@
 package com.project.PetApp1.Services;
 
+import com.project.PetApp1.Entities.Comment;
 import com.project.PetApp1.Entities.Follow;
+import com.project.PetApp1.Entities.Like;
 import com.project.PetApp1.Entities.User;
-import com.project.PetApp1.Repositories.FollowRepository;
-import com.project.PetApp1.Repositories.UserRepository;
+import com.project.PetApp1.Exceptions.UserNotFoundException;
+import com.project.PetApp1.Repositories.*;
 import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
 import com.project.PetApp1.Responses.FollowResponse;
 import com.project.PetApp1.Responses.UserResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -22,7 +29,21 @@ public class UserService {
     private String ppStorage = "C:\\Users\\burak\\OneDrive\\Masaüstü\\source";
 
     private UserRepository userRepository;
+    private LikeRepository likeRepository;
+    private PostRepository postRepository;
+    private CommentRepository commentRepository;
     private FollowRepository followRepository;
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserService(PasswordEncoder passwordEncoder,UserRepository userRepository, LikeRepository likeRepository, PostRepository postRepository, CommentRepository commentRepository, FollowRepository followRepository) {
+        this.userRepository = userRepository;
+        this.likeRepository = likeRepository;
+        this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
+        this.followRepository = followRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public UserService(UserRepository userRepository, FollowRepository followRepository) {
         this.userRepository = userRepository;
@@ -51,7 +72,7 @@ public class UserService {
         newUser.setPhone(newUserRequest.getPhone());
         newUser.setSurname(newUserRequest.getSurname());
         newUser.setPassword(newUserRequest.getPassword());
-
+        newUser.setCreateDate(new Date());
         if (photo != null && !photo.isEmpty()) {
             String newPhotoPath = ppStorage + File.separator + photo.getOriginalFilename();
             transferFile(photo, newPhotoPath);
@@ -74,7 +95,7 @@ public class UserService {
             Set<Follow> followers = followRepository.findByFollowedUserId(user.getId());
             return Collections.singletonList(mapToResponse(user, follows, followers));
         } else {
-            return Collections.emptyList();
+            throw new UserNotFoundException("Kullanıcı bulunamadı." + userId);
         }
     }
 
@@ -85,27 +106,31 @@ public class UserService {
         if (userOptional.isPresent()) {
             User foundUser = userOptional.get();
 
-
+            // Kullanıcı adı, mail, bio, telefon, isim, soyisim gibi diğer alanların güncellenmesi
             foundUser.setUserName(updateUserRequest.getUserName());
-            foundUser.setPassword(updateUserRequest.getPassword());
             foundUser.setMail(updateUserRequest.getMail());
             foundUser.setBio(updateUserRequest.getBio());
             foundUser.setPhone(updateUserRequest.getPhone());
             foundUser.setName(updateUserRequest.getName());
             foundUser.setSurname(updateUserRequest.getSurname());
 
+            // Eğer parola değiştiyse, yeni parolayı şifreleyip kaydet
+            if (!updateUserRequest.getPassword().equals(foundUser.getPassword())) {
+                foundUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
+            }
 
+            // Eğer fotoğraf yüklenmişse, eski fotoğrafı sil ve yeni fotoğrafı kaydet
             if (photo != null && !photo.isEmpty()) {
-
                 if (foundUser.getPhoto() != null) {
                     File oldFile = new File(foundUser.getPhoto());
                     oldFile.delete();
                 }
-
                 String newPhotoPath = ppStorage + File.separator + photo.getOriginalFilename();
                 transferFile(photo, newPhotoPath);
                 foundUser.setPhoto(newPhotoPath);
             }
+
+            foundUser.setCreateDate(new Date());
 
             userRepository.save(foundUser);
 
@@ -114,6 +139,7 @@ public class UserService {
             return null;
         }
     }
+
 
 
     private void transferFile(MultipartFile file, String destinationPath) {
@@ -168,6 +194,26 @@ public class UserService {
 
     public User getOneUserByUsername(String userName) {
         return userRepository.findByUserName(userName);
+    }
+
+    public List<Object> getUserActivity(Long userId) {
+        List<Long> postIds = postRepository.findTopByUserId(userId);
+        if (postIds.isEmpty()){
+            return null;
+        }
+        List<Object> comments = commentRepository.findUserCommentsByPostId(postIds);
+        List<Object> likes = likeRepository.findUserLikesByPostId(postIds);
+        List<Object> result = new ArrayList<>();
+        result.addAll(comments);
+        result.addAll(likes);
+        return result;
+    }
+
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private void handleUserNotFound(UserNotFoundException ex) {
+        System.out.println("Hata: " + ex.getMessage());
     }
 }
 

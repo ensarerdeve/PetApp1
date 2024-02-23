@@ -42,8 +42,13 @@ import java.util.Optional;
         }
     }
     @GetMapping("/{userId}")
-    public List<PostResponse> getOnePost(@PathVariable Long userId){
+    public List<PostResponse> getOnePostByUserId(@PathVariable Long userId){
         return postService.getOnePostByUserId(userId);
+    }
+
+    @GetMapping("/id/{postId}")
+    public PostResponse getOnePostByPostId(@PathVariable Long postId){
+        return postService.getOnePostByPostId(postId);
     }
 
     @PutMapping("/{postId}")

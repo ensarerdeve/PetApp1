@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -58,6 +59,9 @@ public class User {
 
     @OneToMany(mappedBy = "followedUser", fetch = FetchType.LAZY)
     Set<Follow> followers;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    Date createDate;
 
 
 }
