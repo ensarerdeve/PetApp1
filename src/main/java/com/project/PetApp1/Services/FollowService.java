@@ -36,13 +36,13 @@ public class FollowService {
     public FollowResponse createFollow(FollowCreateRequest followCreateRequest) {
         User follower = userService.getOneUserById(followCreateRequest.getFollowerId());
         User followedUser = userService.getOneUserById(followCreateRequest.getFollowedUserId());
-
         Follow existingFollow = followRepository.findByFollowerAndFollowedUser(follower, followedUser);
+
         if (existingFollow != null) {
-            throw new IllegalArgumentException("Bu kullanıcıyı zaten takip ediyorsunuz.");
+            throw new IllegalArgumentException("This user is already followed.");
         }
 
-        if (follower != null && followedUser != null){
+        if (follower != null && followedUser != null) {
             Follow followToSave = new Follow();
             followToSave.setFollowedUser(followedUser);
             followToSave.setFollower(follower);
@@ -50,18 +50,27 @@ public class FollowService {
 
             Follow savedFollow = followRepository.save(followToSave);
 
+            if (savedFollow == null) {
+                throw new IllegalStateException("Failed to save follow relationship.");
+            }
+
+
             FollowResponse response = new FollowResponse();
             response.setId(savedFollow.getId());
             response.setFollowedUserName(savedFollow.getFollowedUser().getUserName());
             response.setFollowerUserName(savedFollow.getFollower().getUserName());
 
             return response;
-
-
         } else {
-            throw new IllegalArgumentException("Takip eden veya takip edilen kullanıcı bulunamadı.");
+            throw new IllegalArgumentException("Follower or followed user not found.");
         }
     }
+
+
+
+
+
+
 
     public void deleteFollowById(Long followId) {
         followRepository.deleteById(followId);

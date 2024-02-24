@@ -106,7 +106,6 @@ public class UserService {
         if (userOptional.isPresent()) {
             User foundUser = userOptional.get();
 
-            // Kullanıcı adı, mail, bio, telefon, isim, soyisim gibi diğer alanların güncellenmesi
             foundUser.setUserName(updateUserRequest.getUserName());
             foundUser.setMail(updateUserRequest.getMail());
             foundUser.setBio(updateUserRequest.getBio());
@@ -114,12 +113,11 @@ public class UserService {
             foundUser.setName(updateUserRequest.getName());
             foundUser.setSurname(updateUserRequest.getSurname());
 
-            // Eğer parola değiştiyse, yeni parolayı şifreleyip kaydet
+
             if (!updateUserRequest.getPassword().equals(foundUser.getPassword())) {
                 foundUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
             }
 
-            // Eğer fotoğraf yüklenmişse, eski fotoğrafı sil ve yeni fotoğrafı kaydet
             if (photo != null && !photo.isEmpty()) {
                 if (foundUser.getPhoto() != null) {
                     File oldFile = new File(foundUser.getPhoto());

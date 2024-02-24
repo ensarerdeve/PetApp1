@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "follow")
@@ -25,4 +26,5 @@ public class Follow {
 
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
+
 }
