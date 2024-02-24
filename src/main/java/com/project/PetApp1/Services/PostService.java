@@ -1,17 +1,11 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.Comment;
-import com.project.PetApp1.Entities.Like;
-import com.project.PetApp1.Entities.Post;
-import com.project.PetApp1.Entities.User;
-import com.project.PetApp1.Repositories.CommentRepository;
-import com.project.PetApp1.Repositories.LikeRepository;
-import com.project.PetApp1.Repositories.PostRepository;
+import com.project.PetApp1.Entities.*;
+import com.project.PetApp1.Exceptions.UserNotFoundException;
+import com.project.PetApp1.Repositories.*;
 import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
-import com.project.PetApp1.Responses.CommentResponse;
-import com.project.PetApp1.Responses.LikeResponse;
-import com.project.PetApp1.Responses.PostResponse;
+import com.project.PetApp1.Responses.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -19,9 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,18 +26,22 @@ public class PostService {
     @Lazy
     private CommentService commentService;
     private LikeService likeService;
+    private UserRepository userRepository;
+    private FollowRepository followRepository;
 
 
 
 
     private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
     @Autowired
-    public PostService(PostRepository postRepository, UserService userService, CommentRepository commentRepository, CommentService commentService) {
+    public PostService(FollowRepository followRepository, PostRepository postRepository, UserService userService, CommentRepository commentRepository, CommentService commentService, UserRepository userRepository) {
         this.commentRepository = commentRepository;
 
         this.postRepository = postRepository;
         this.userService = userService;
         this.commentService =commentService;
+        this.userRepository = userRepository;
+        this.followRepository = followRepository;
     }
 
     @Autowired
@@ -88,11 +84,7 @@ public class PostService {
         List<CommentResponse> comments = commentService.getAllCommentsByPostId(postId);
         return new PostResponse(post,likes,comments);
     }
-
-    public Post getOnePostById(Long postId) {
-        return postRepository.findById(postId).orElse(null);
-    }
-
+    
     public PostResponse createOnePost(PostCreateRequest newPostRequest, MultipartFile media) throws IOException {
         User user = userService.getOneUserById(newPostRequest.getUserId());
         if (user != null) {
@@ -106,14 +98,6 @@ public class PostService {
             return new PostResponse(savedPost);
         } else {
             return null; // Kullanıcı bulunamadı
-        }
-    }
-
-    private void transferFile(MultipartFile file, String destinationPath) { //uploadladığımız herhangi bir yerdeki fotoğrafı belirlerdiğimiz pathe getirmek için
-        try {
-            file.transferTo(new File(destinationPath));
-        } catch (IOException e) {
-            throw new RuntimeException("Dosya transferi sırasında bir hata oluştu.", e);
         }
     }
 
@@ -141,4 +125,55 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
+    public List<FollowedUsersResponse> getPostsOfUsersFollows(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Set<Follow> follows = followRepository.findByFollowerId(user.getId());
+
+            List<FollowedUsersResponse> responses = new ArrayList<>();
+            for (Follow follow : follows) {
+                List<PostResponse> postResponses = new ArrayList<>();
+                User followedUser = follow.getFollowedUser();
+                List<Post> posts = postRepository.findByUserId(followedUser.getId());
+                for (Post post : posts) {
+                    List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.of(user.getId()), Optional.of(post.getId()));
+                    List<CommentResponse> comments = commentService.getAllCommentsByPostId(post.getId());
+                    postResponses.add(new PostResponse(post, likes, comments));
+                }
+                FollowedUsersResponse response = mapToFollowedUsersResponse(user, follow, postResponses);
+                responses.add(response);
+            }
+
+            return responses;
+        } else {
+            throw new UserNotFoundException("Kullanıcı bulunamadı." + userId);
+        }
+    }
+
+    public FollowedUsersResponse mapToFollowedUsersResponse(User user, Follow follow, List<PostResponse> posts) {
+        FollowedUsersResponse response = new FollowedUsersResponse();
+        response.setUserId(user.getId());
+
+        Set<FollowResponse> followResponses = new HashSet<>();
+        FollowResponse followResponse = new FollowResponse();
+        followResponse.setId(follow.getId());
+        followResponse.setFollowerUserName(follow.getFollower().getUserName());
+        followResponse.setFollowedUserName(follow.getFollowedUser().getUserName());
+        followResponses.add(followResponse);
+
+        response.setFollowing(followResponses);
+        response.setPosts(posts);
+
+        return response;
+    }
+
 }
+
+
+
+
+
+
+
+

@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -54,14 +55,13 @@ public class User {
     @Nullable
     String photo;
 
-    @OneToMany(mappedBy = "follower", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "follower", fetch = FetchType.EAGER)
     Set<Follow> following;
 
-    @OneToMany(mappedBy = "followedUser", fetch = FetchType.LAZY)
-    Set<Follow> followers;
+    @OneToMany(mappedBy = "followedUser", fetch = FetchType.EAGER)
+    Set<Follow> followed;
 
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
-
 
 }

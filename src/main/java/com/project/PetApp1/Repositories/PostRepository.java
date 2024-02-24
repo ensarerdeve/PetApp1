@@ -1,6 +1,7 @@
 package com.project.PetApp1.Repositories;
 
 import com.project.PetApp1.Entities.Post;
+import com.project.PetApp1.Responses.PostResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,5 +15,4 @@ public interface PostRepository extends JpaRepository<Post, Long> {
             nativeQuery = true)
     List<Long> findTopByUserId(@Param("userId") Long userId);
 
-    List<Post> getOnePostByUserId(Long userId);
 }

@@ -7,4 +7,6 @@ public class FollowResponse {
     Long id;
     String followerUserName;
     String followedUserName;
+
+
 }

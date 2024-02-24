@@ -3,6 +3,7 @@ package com.project.PetApp1.Controllers;
 import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
+import com.project.PetApp1.Responses.FollowedUsersResponse;
 import com.project.PetApp1.Responses.PostResponse;
 import com.project.PetApp1.Services.PostService;
 import org.springframework.http.HttpStatus;
@@ -49,6 +50,11 @@ import java.util.Optional;
     @GetMapping("/id/{postId}")
     public PostResponse getOnePostByPostId(@PathVariable Long postId){
         return postService.getOnePostByPostId(postId);
+    }
+
+    @GetMapping("/follow/{userId}")
+    public List<FollowedUsersResponse> getPostsOfUsersFollows(@PathVariable Long userId){
+        return postService.getPostsOfUsersFollows(userId);
     }
 
     @PutMapping("/{postId}")
