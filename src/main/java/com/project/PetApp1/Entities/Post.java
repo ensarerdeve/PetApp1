@@ -17,9 +17,9 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     Long id;
-    @ManyToOne(fetch = FetchType.EAGER)//post objesini çektiğinde user'ı hemen çek demek
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id",nullable = false)
-    @OnDelete(action = OnDeleteAction.CASCADE)//bir user silindiğinde ilgili tüm postlarını sil
+    @OnDelete(action = OnDeleteAction.CASCADE)
     User user;
 
     @Lob
