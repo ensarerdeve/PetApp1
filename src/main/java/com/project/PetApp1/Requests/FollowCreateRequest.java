@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class FollowCreateRequest {
 
-    Long followerId;
-    Long followedUserId;
+    private Long followerId;
+    private Long followedUserId;
 }

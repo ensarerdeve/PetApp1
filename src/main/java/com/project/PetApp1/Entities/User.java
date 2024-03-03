@@ -8,7 +8,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 
@@ -64,4 +66,10 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
+    @NotNull
+    @Column(name = "is_private", nullable = false)
+    boolean isPrivate = false;
+
+    @OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<FollowRequest> followRequests = new ArrayList<>();
 }

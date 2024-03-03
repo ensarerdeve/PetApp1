@@ -4,9 +4,9 @@ import lombok.Data;
 
 @Data
 public class FollowResponse {
-    Long id;
-    String followerUserName;
-    String followedUserName;
+    private Long id;
+    private String followerUserName;
+    private String followedUserName;
 
 
 }
