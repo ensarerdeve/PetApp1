@@ -15,84 +15,38 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/follow/requests")
 public class FollowRequestController {
 
-    private final FollowRequestService requestService;
+    private final FollowRequestService followRequestService;
 
     private final UserService userService;
 
-    public FollowRequestController(FollowRequestService requestService, UserService userService) {
-        this.requestService = requestService;
+    public FollowRequestController(FollowRequestService followRequestService, UserService userService) {
+        this.followRequestService = followRequestService ;
         this.userService = userService;
     }
 
     @PostMapping("/accept/{userId}/{requestId}")
-    public ResponseEntity<String> acceptFollowRequest(@PathVariable Long userId, @PathVariable Long requestId) {
+    public ResponseEntity<Object> acceptFollowRequest(@PathVariable Long userId, @PathVariable Long requestId) {
         User user = userService.getOneUserById(userId);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        FollowRequest followRequest = followRequestService.getFollowRequestById(requestId);
+
+        if (user == null || followRequest == null || !followRequest.getFollowedUser().equals(user)) {
+            return ResponseEntity.badRequest().body("User or follow request not found.");
         }
 
-        FollowRequest followRequest = user.getFollowRequests().stream()
-                .filter(req -> req.getId().equals(requestId))
-                .findFirst()
-                .orElse(null);
-
-        if (followRequest == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Follow request not found");
-        }
-
-        requestService.acceptFollowRequest(user, followRequest);
-        return ResponseEntity.ok("Follow request accepted");
+        followRequestService.acceptFollowRequest(user, followRequest);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/reject/{userId}/{requestId}")
-    public ResponseEntity<String> rejectFollowRequest(@PathVariable Long userId, @PathVariable Long requestId) {
+    public ResponseEntity<Object> rejectFollowRequest(@PathVariable Long userId, @PathVariable Long requestId) {
         User user = userService.getOneUserById(userId);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        FollowRequest followRequest = followRequestService.getFollowRequestById(requestId);
+
+        if (user == null || followRequest == null || !followRequest.getFollowedUser().equals(user)) {
+            return ResponseEntity.badRequest().body("User or follow request not found.");
         }
 
-        FollowRequest followRequest = user.getFollowRequests().stream()
-                .filter(req -> req.getId().equals(requestId))
-                .findFirst()
-                .orElse(null);
-
-        if (followRequest == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Follow request not found");
-        }
-
-        requestService.rejectFollowRequest(user, followRequest);
-        return ResponseEntity.ok("Follow request rejected");
-    }
-
-    @PostMapping("/add/{followerId}/{followedUserId}")
-    public ResponseEntity<String> addFollowRequest(@PathVariable Long followerId, @PathVariable Long followedUserId) {
-        User follower = userService.getOneUserById(followerId);
-        User followedUser = userService.getOneUserById(followedUserId);
-        if (follower == null || followedUser == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-
-        requestService.addFollowRequest(follower, followedUser);
-        return ResponseEntity.ok("Follow request added");
-    }
-
-    @PostMapping("/remove/{userId}/{requestId}")
-    public ResponseEntity<String> removeFollowRequest(@PathVariable Long userId, @PathVariable Long requestId) {
-        User user = userService.getOneUserById(userId);
-        if (user == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
-        }
-
-        FollowRequest followRequest = user.getFollowRequests().stream()
-                .filter(req -> req.getId().equals(requestId))
-                .findFirst()
-                .orElse(null);
-
-        if (followRequest == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Follow request not found");
-        }
-
-        requestService.removeFollowRequest(user, followRequest);
-        return ResponseEntity.ok("Follow request removed");
+        followRequestService.rejectFollowRequest(user, followRequest);
+        return ResponseEntity.ok().build();
     }
 }

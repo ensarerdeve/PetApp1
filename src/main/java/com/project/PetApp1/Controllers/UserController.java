@@ -3,8 +3,10 @@ package com.project.PetApp1.Controllers;
 import com.project.PetApp1.Entities.User;
 import com.project.PetApp1.Exceptions.UserNotFoundException;
 import com.project.PetApp1.Requests.UserCreateRequest;
+import com.project.PetApp1.Requests.UserPrivacyUpdateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
 import com.project.PetApp1.Responses.UserResponse;
+import com.project.PetApp1.Responses.UserSearchResponse;
 import com.project.PetApp1.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,12 +23,12 @@ public class UserController {
     private UserService userService;
 
     @Autowired
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public List<UserResponse> getAllUsers(){
+    public List<UserResponse> getAllUsers() {
         return userService.getAllUsers();
     }
 
@@ -37,13 +39,18 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public List<UserResponse> getOneUser(@PathVariable Long userId){
+    public List<UserResponse> getOneUser(@PathVariable Long userId) {
         return userService.getUserDataById(userId);
     }
 
     @GetMapping("/activity/{userId}")
-    public List<Object> getUserActivity(@PathVariable Long userId){
+    public List<Object> getUserActivity(@PathVariable Long userId) {
         return userService.getUserActivity(userId);
+    }
+
+    @GetMapping("/search/{username}")
+    public List<UserSearchResponse> searchUsersByUsername(@PathVariable String username) {
+        return userService.searchUsersByUsername(username);
     }
 
     @PutMapping("/{userId}")
@@ -52,7 +59,7 @@ public class UserController {
             @ModelAttribute UserUpdateRequest userUpdateRequest,
             @RequestPart(value = "photo", required = false) MultipartFile photo
     ) {
-        User updatedUser = userService.updateOneUser(userId,userUpdateRequest,photo);
+        User updatedUser = userService.updateOneUser(userId, userUpdateRequest, photo);
         if (updatedUser != null) {
             return new ResponseEntity<>(updatedUser, HttpStatus.OK);
         } else {
@@ -60,9 +67,27 @@ public class UserController {
         }
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteOneUser(@PathVariable Long userId){
-        userService.deleteById(userId);
+    @PutMapping("/{userId}/privacy")
+    public ResponseEntity<Object> updateUserPrivacy(@PathVariable Long userId, @RequestBody UserPrivacyUpdateRequest privacyUpdateRequest) {
+        boolean newPrivacySetting = privacyUpdateRequest.isPrivate();
+
+        try {
+            userService.updateUserPrivacy(userId, newPrivacySetting);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException ex) {
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while updating user privacy.");
+        }
     }
 
+
+
+    @DeleteMapping("/{userId}")
+    public void deleteOneUser(@PathVariable Long userId) {
+        userService.deleteById(userId);
+    }
 }
+
+
+

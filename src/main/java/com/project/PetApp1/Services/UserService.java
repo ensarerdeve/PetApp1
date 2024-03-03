@@ -10,6 +10,7 @@ import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
 import com.project.PetApp1.Responses.FollowResponse;
 import com.project.PetApp1.Responses.UserResponse;
+import com.project.PetApp1.Responses.UserSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -63,6 +64,14 @@ public class UserService {
         return responses;
     }
 
+    public void updateUserPrivacy(Long userId, boolean isPrivate) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
+
+        user.setPrivate(isPrivate);
+        userRepository.save(user);
+    }
+
     public User saveOneUser(UserCreateRequest newUserRequest, MultipartFile photo) {
         User newUser = new User();
         newUser.setUserName(newUserRequest.getUserName());
@@ -80,6 +89,26 @@ public class UserService {
         }
 
         return userRepository.save(newUser);
+    }
+
+
+    public List<UserSearchResponse> searchUsersByUsername(String username) {
+        List<User> users = userRepository.findByUserNameStartingWith(username);
+        List<UserSearchResponse> responses = new ArrayList<>();
+        for (User user : users) {
+            responses.add(mapToSearchResponse(user));
+        }
+        return responses;
+    }
+
+    public UserSearchResponse mapToSearchResponse(User user) {
+        UserSearchResponse response = new UserSearchResponse();
+        response.setId(user.getId());
+        response.setUserName(user.getUserName());
+        response.setName(user.getName());
+        response.setSurname(user.getSurname());
+        response.setPhoto(user.getPhoto());
+        return response;
     }
 
 
