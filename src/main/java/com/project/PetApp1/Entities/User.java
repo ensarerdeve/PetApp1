@@ -1,21 +1,21 @@
 package com.project.PetApp1.Entities;
 
-import jakarta.annotation.Nullable;
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 
 @Entity
 @Table(name="user")
 @Data
+@EqualsAndHashCode(exclude = {"following", "followed"})
 public class User {
 
     @Id
@@ -40,7 +40,7 @@ public class User {
     @Size(max = 20)
     String phone;
 
-    @Nullable
+    @NotNull
     @Size(max = 100)
     String bio;
 
@@ -52,7 +52,7 @@ public class User {
     @Size(max = 50)
     String surname;
 
-    @Nullable
+    @NotNull
     String photo;
 
     @OneToMany(mappedBy = "follower", fetch = FetchType.EAGER)
