@@ -4,5 +4,5 @@ import lombok.Data;
 
 @Data
 public class UserPrivacyUpdateRequest {
-    private boolean isPrivate;
+    private boolean profileLock;
 }

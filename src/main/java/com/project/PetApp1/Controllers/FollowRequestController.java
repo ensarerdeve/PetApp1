@@ -6,10 +6,9 @@ import com.project.PetApp1.Services.FollowRequestService;
 import com.project.PetApp1.Services.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/follow/requests")
@@ -22,6 +21,18 @@ public class FollowRequestController {
     public FollowRequestController(FollowRequestService followRequestService, UserService userService) {
         this.followRequestService = followRequestService ;
         this.userService = userService;
+    }
+
+    @GetMapping("/incoming/{userId}")
+    public ResponseEntity<List<FollowRequest>> getIncomingFollowRequests(@PathVariable Long userId) {
+        User user = userService.getOneUserById(userId);
+
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        List<FollowRequest> incomingRequests = followRequestService.getIncomingFollowRequests(user);
+        return ResponseEntity.ok(incomingRequests);
     }
 
     @PostMapping("/accept/{userId}/{requestId}")

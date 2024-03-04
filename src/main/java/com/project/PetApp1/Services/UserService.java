@@ -1,8 +1,6 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.Comment;
 import com.project.PetApp1.Entities.Follow;
-import com.project.PetApp1.Entities.Like;
 import com.project.PetApp1.Entities.User;
 import com.project.PetApp1.Exceptions.UserNotFoundException;
 import com.project.PetApp1.Repositories.*;
@@ -64,12 +62,12 @@ public class UserService {
         return responses;
     }
 
-    public void updateUserPrivacy(Long userId, boolean isPrivate) {
+    public void updateUserPrivacy(Long userId, boolean profileLock) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
 
-        user.setPrivate(isPrivate);
-        userRepository.save(user);
+        user.setProfileLock(profileLock);
+        userRepository.saveAndFlush(user);
     }
 
     public User saveOneUser(UserCreateRequest newUserRequest, MultipartFile photo) {

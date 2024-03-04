@@ -69,7 +69,7 @@ public class UserController {
 
     @PutMapping("/{userId}/privacy")
     public ResponseEntity<Object> updateUserPrivacy(@PathVariable Long userId, @RequestBody UserPrivacyUpdateRequest privacyUpdateRequest) {
-        boolean newPrivacySetting = privacyUpdateRequest.isPrivate();
+        boolean newPrivacySetting = privacyUpdateRequest.isProfileLock();
 
         try {
             userService.updateUserPrivacy(userId, newPrivacySetting);

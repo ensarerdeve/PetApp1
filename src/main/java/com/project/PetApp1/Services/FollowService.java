@@ -41,7 +41,7 @@ public class FollowService {
             throw new IllegalArgumentException("Follower or followed user not found.");
         }
 
-        if (followedUser.isPrivate()) {
+        if (followedUser.isProfileLock()) {
             // Eğer takip edilmek istenen kullanıcının profili kapalıysa, takip isteği gönderilir
             followRequestService.addFollowRequest(follower, followedUser);
             System.out.println("Follow request sent to user with id: " + followedUser.getId());

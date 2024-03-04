@@ -10,6 +10,7 @@ import com.project.PetApp1.Requests.RequestStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class FollowRequestService {
@@ -23,6 +24,10 @@ public class FollowRequestService {
         this.userRepository = userRepository;
         this.followRequestRepository = followRequestRepository;
         this.followRepository = followRepository;
+    }
+
+    public List<FollowRequest> getIncomingFollowRequests(User user) {
+        return followRequestRepository.findByFollowedUser(user);
     }
 
     public void acceptFollowRequest(User user, FollowRequest followRequest) {
