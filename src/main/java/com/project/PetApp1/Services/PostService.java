@@ -32,7 +32,7 @@ public class PostService {
 
 
 
-    private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
+    private String uploadDirectory = "C:\\Users\\burak\\OneDrive\\Masaüstü\\source";
     @Autowired
     public PostService(FollowRepository followRepository, PostRepository postRepository, UserService userService, CommentRepository commentRepository, CommentService commentService, UserRepository userRepository) {
         this.commentRepository = commentRepository;
