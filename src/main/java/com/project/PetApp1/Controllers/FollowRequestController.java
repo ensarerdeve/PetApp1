@@ -2,6 +2,7 @@ package com.project.PetApp1.Controllers;
 
 import com.project.PetApp1.Entities.FollowRequest;
 import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Responses.FollowRequestResponse;
 import com.project.PetApp1.Services.FollowRequestService;
 import com.project.PetApp1.Services.UserService;
 import org.springframework.http.HttpStatus;
@@ -24,14 +25,14 @@ public class FollowRequestController {
     }
 
     @GetMapping("/incoming/{userId}")
-    public ResponseEntity<List<FollowRequest>> getIncomingFollowRequests(@PathVariable Long userId) {
+    public ResponseEntity<List<FollowRequestResponse>> getIncomingFollowRequests(@PathVariable Long userId) {
         User user = userService.getOneUserById(userId);
 
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
 
-        List<FollowRequest> incomingRequests = followRequestService.getIncomingFollowRequests(user);
+        List<FollowRequestResponse> incomingRequests = followRequestService.getIncomingFollowRequests(user);
         return ResponseEntity.ok(incomingRequests);
     }
 
