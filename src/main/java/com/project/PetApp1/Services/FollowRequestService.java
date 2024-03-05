@@ -7,10 +7,12 @@ import com.project.PetApp1.Repositories.FollowRepository;
 import com.project.PetApp1.Repositories.FollowRequestRepository;
 import com.project.PetApp1.Repositories.UserRepository;
 import com.project.PetApp1.Requests.RequestStatus;
+import com.project.PetApp1.Responses.FollowRequestResponse;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FollowRequestService {
@@ -26,9 +28,27 @@ public class FollowRequestService {
         this.followRepository = followRepository;
     }
 
-    public List<FollowRequest> getIncomingFollowRequests(User user) {
-        return followRequestRepository.findByFollowedUser(user);
+    public List<FollowRequestResponse> getIncomingFollowRequests(User user) {
+        List<FollowRequest> followRequests = followRequestRepository.findByFollowedUser(user);
+
+        return followRequests.stream()
+                .filter(request -> request.getStatus() == RequestStatus.PENDING)
+                .map(this::mapToFollowRequestResponse)
+                .collect(Collectors.toList());
     }
+
+    private FollowRequestResponse mapToFollowRequestResponse(FollowRequest followRequest) {
+        FollowRequestResponse response = new FollowRequestResponse();
+        User follower = followRequest.getFollower();
+
+        response.setUserId(follower.getId());
+        response.setUsername(follower.getUserName());
+        response.setProfilePhoto(follower.getPhoto());
+        response.setStatus(followRequest.getStatus());
+
+        return response;
+    }
+
 
     public void acceptFollowRequest(User user, FollowRequest followRequest) {
         followRequest.setStatus(RequestStatus.ACCEPTED);
