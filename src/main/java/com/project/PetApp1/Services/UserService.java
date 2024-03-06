@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -197,7 +198,13 @@ public class UserService {
                     FollowResponse followResponse = new FollowResponse();
                     followResponse.setId(follow.getId());
                     followResponse.setFollowerUserName(follow.getFollower().getUserName());
+                    followResponse.setFollowerUserId(follow.getFollower().getId());
                     followResponse.setFollowedUserName(follow.getFollowedUser().getUserName());
+                    followResponse.setFollowedUserId(follow.getFollowedUser().getId());
+                    followResponse.setCreateDate(follow.getCreateDate());
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                    followResponse.setFormattedDate(dateFormat.format(follow.getCreateDate()));
                     return followResponse;
                 })
                 .collect(Collectors.toSet());
@@ -207,7 +214,13 @@ public class UserService {
                     FollowResponse followResponse = new FollowResponse();
                     followResponse.setId(follow.getId());
                     followResponse.setFollowerUserName(follow.getFollower().getUserName());
+                    followResponse.setFollowerUserId(follow.getFollower().getId());
                     followResponse.setFollowedUserName(follow.getFollowedUser().getUserName());
+                    followResponse.setFollowedUserId(follow.getFollowedUser().getId());
+                    followResponse.setCreateDate(follow.getCreateDate());
+
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+                    followResponse.setFormattedDate(dateFormat.format(follow.getCreateDate()));
                     return followResponse;
                 })
                 .collect(Collectors.toSet());
