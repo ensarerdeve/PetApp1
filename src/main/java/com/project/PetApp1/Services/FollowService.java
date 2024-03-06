@@ -8,6 +8,7 @@ import com.project.PetApp1.Responses.FollowResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,7 +30,15 @@ public class FollowService {
         FollowResponse response = new FollowResponse();
         response.setId(follow.getId());
         response.setFollowedUserName(follow.getFollowedUser().getUserName());
+        response.setFollowedUserId(follow.getFollowedUser().getId());
         response.setFollowerUserName(follow.getFollower().getUserName());
+        response.setFollowerUserId(follow.getFollower().getId());
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss",Locale.getDefault());
+        String formattedDate= dateFormat.format(follow.getCreateDate());
+        response.setFormattedDate(formattedDate);
+        response.setCreateDate(follow.getCreateDate());
+
         return response;
     }
 

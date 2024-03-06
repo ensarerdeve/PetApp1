@@ -10,8 +10,6 @@ import java.util.Set;
 @Repository
 public interface FollowRepository extends JpaRepository <Follow, Long> {
     Set<Follow> findByFollowerId(Long followerId);
-
-    Follow findByFollowerAndFollowedUser(User follower, User followedUser);
-
+    
     Set<Follow> findByFollowedUserId(Long userId);
 }

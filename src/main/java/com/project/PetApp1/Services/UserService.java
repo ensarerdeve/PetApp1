@@ -190,6 +190,7 @@ public class UserService {
         response.setName(user.getName());
         response.setSurname(user.getSurname());
         response.setPhoto(user.getPhoto());
+        response.setProfileLock(user.isProfileLock());
 
         Set<FollowResponse> followingResponse = follows.stream()
                 .map(follow -> {
