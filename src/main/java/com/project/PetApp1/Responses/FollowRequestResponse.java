@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class FollowRequestResponse {
 
+    private Long id;
     private Long userId;
     private String profilePhoto;
     private String username;

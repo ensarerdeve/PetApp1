@@ -40,11 +40,12 @@ public class FollowRequestService {
     private FollowRequestResponse mapToFollowRequestResponse(FollowRequest followRequest) {
         FollowRequestResponse response = new FollowRequestResponse();
         User follower = followRequest.getFollower();
-
+        response.setId(followRequest.getId());
         response.setUserId(follower.getId());
         response.setUsername(follower.getUserName());
         response.setProfilePhoto(follower.getPhoto());
         response.setStatus(followRequest.getStatus());
+
 
         return response;
     }
