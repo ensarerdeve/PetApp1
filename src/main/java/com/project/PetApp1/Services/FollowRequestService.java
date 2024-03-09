@@ -85,9 +85,16 @@ public class FollowRequestService {
         userRepository.save(followedUser);
     }
 
-    public void removeFollowRequest(User user, FollowRequest followRequest) {
-        user.getFollowRequests().remove(followRequest);
-        userRepository.save(user);
+    public void cancelPendingFollowRequest(Long requestId) {
+        FollowRequest followRequest = followRequestRepository.findById(requestId)
+                .orElseThrow(() -> new IllegalArgumentException("Follow request not found with id: " + requestId));
+
+        if (followRequest.getStatus() == RequestStatus.PENDING) {
+            followRequestRepository.delete(followRequest);
+        } else {
+            throw new IllegalArgumentException("Cannot cancel follow request with status other than PENDING.");
+        }
     }
+
 }
 
