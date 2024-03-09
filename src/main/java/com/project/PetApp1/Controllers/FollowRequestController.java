@@ -62,7 +62,7 @@ public class FollowRequestController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{requestId}")
+    @DeleteMapping("/delete/{requestId}")
     public ResponseEntity<Object> deleteFollowRequest(@PathVariable Long requestId) {
         try {
             followRequestService.cancelPendingFollowRequest(requestId);
