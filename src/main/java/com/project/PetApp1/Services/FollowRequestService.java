@@ -91,6 +91,7 @@ public class FollowRequestService {
 
         if (followRequest.getStatus() == RequestStatus.PENDING) {
             followRequestRepository.delete(followRequest);
+            System.out.println("Başarıyla silindi.");
         } else {
             throw new IllegalArgumentException("Cannot cancel follow request with status other than PENDING.");
         }
