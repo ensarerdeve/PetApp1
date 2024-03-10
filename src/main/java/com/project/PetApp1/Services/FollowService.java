@@ -78,8 +78,9 @@ public class FollowService {
     }
 
 
-    public void deleteFollowById(Long followId) {
-        followRepository.deleteById(followId);
+    public void deleteFollowById(Long followerId, Long followedUserId) {
+        Follow follow = followRepository.findByFollowerIdAndFollowedUserId(followerId,followedUserId);
+        followRepository.delete(follow);
     }
 
     public Set<FollowResponse> getAllFollows() {
