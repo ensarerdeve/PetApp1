@@ -62,10 +62,10 @@ public class FollowRequestController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/delete/{requestId}")
-    public ResponseEntity<Object> deleteFollowRequest(@PathVariable Long requestId) {
+    @DeleteMapping("/delete/{followerId}/{followedUserId}")
+    public ResponseEntity<Object> cancelPendingFollowRequest(@PathVariable Long followerId, @PathVariable Long followedUserId) {
         try {
-            followRequestService.cancelPendingFollowRequest(requestId);
+            followRequestService.cancelPendingFollowRequest(followerId, followedUserId);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());

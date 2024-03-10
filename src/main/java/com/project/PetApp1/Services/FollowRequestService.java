@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -85,17 +86,20 @@ public class FollowRequestService {
         userRepository.save(followedUser);
     }
 
-    public void cancelPendingFollowRequest(Long requestId) {
-        FollowRequest followRequest = followRequestRepository.findById(requestId)
-                .orElseThrow(() -> new IllegalArgumentException("Follow request not found with id: " + requestId));
+    public void cancelPendingFollowRequest(Long followerId, Long followedUserId) {
+        Optional<FollowRequest> optionalFollowRequest = followRequestRepository.findByFollowerIdAndFollowedUserIdAndStatus(followerId, followedUserId, RequestStatus.PENDING);
 
-        if (followRequest.getStatus() == RequestStatus.PENDING) {
+        if (optionalFollowRequest.isPresent()) {
+            FollowRequest followRequest = optionalFollowRequest.get();
             followRequestRepository.delete(followRequest);
-            System.out.println("Başarıyla silindi.");
         } else {
-            throw new IllegalArgumentException("Cannot cancel follow request with status other than PENDING.");
+            throw new IllegalArgumentException("Pending follow request not found");
         }
     }
+
+
+
+
 
 }
 
