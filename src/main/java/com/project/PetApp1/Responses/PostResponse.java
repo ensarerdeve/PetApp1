@@ -1,8 +1,10 @@
 package com.project.PetApp1.Responses;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.project.PetApp1.Entities.Like;
 import com.project.PetApp1.Entities.Post;
 import lombok.Data;
+import java.util.Date;
 
 import java.util.List;
 
@@ -13,6 +15,10 @@ public class PostResponse {
     String userName;
     String photo;
     String text;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    Date createDate;
+
+
     List<LikeResponse> postLikes;
     List<CommentResponse> comments;
     public PostResponse(Post entity) {
@@ -21,6 +27,7 @@ public class PostResponse {
         this.userName = entity.getUser().getUserName();
         this.text = entity.getText();
         this.photo = entity.getPhoto();
+        this.createDate = entity.getCreateDate();
     }
 
     public PostResponse(Post entity, List<LikeResponse> likes, List<CommentResponse> comments){

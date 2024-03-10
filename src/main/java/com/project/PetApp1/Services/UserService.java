@@ -203,8 +203,6 @@ public class UserService {
                     followResponse.setFollowedUserId(follow.getFollowedUser().getId());
                     followResponse.setCreateDate(follow.getCreateDate());
 
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-                    followResponse.setFormattedDate(dateFormat.format(follow.getCreateDate()));
                     return followResponse;
                 })
                 .collect(Collectors.toSet());
@@ -218,9 +216,6 @@ public class UserService {
                     followResponse.setFollowedUserName(follow.getFollowedUser().getUserName());
                     followResponse.setFollowedUserId(follow.getFollowedUser().getId());
                     followResponse.setCreateDate(follow.getCreateDate());
-
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
-                    followResponse.setFormattedDate(dateFormat.format(follow.getCreateDate()));
                     return followResponse;
                 })
                 .collect(Collectors.toSet());
