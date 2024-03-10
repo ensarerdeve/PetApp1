@@ -34,8 +34,12 @@ public class LikeController {
         return likeService.getOneLikeById(likeId);
     }
 
-    @DeleteMapping("/{likeId}")
-    public void deleteOneLike(@PathVariable Long likeId) {
-        likeService.deleteOneLikeById(likeId);
+    @DeleteMapping("/{postId}/{userId}")
+    public void deleteOneLike(@PathVariable Long postId, @PathVariable Long userId) {
+        likeService.deleteOneLikeByPostAndUser(postId, userId);
     }
+
+
+
+
 }
