@@ -1,12 +1,12 @@
 package com.project.PetApp1.Controllers;
 
-import com.project.PetApp1.Entities.Follow;
 import com.project.PetApp1.Requests.FollowCreateRequest;
 import com.project.PetApp1.Responses.FollowResponse;
 import com.project.PetApp1.Services.FollowService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -40,9 +40,14 @@ public class FollowController {
         return followService.createFollow(followCreateRequest);
     }
 
-    @DeleteMapping("/{followId}")
-    public void deleteFollow(@PathVariable Long followId){
-        followService.deleteFollowById(followId);
+    @DeleteMapping("/delete/{followerId}/{followedUserId}")
+    public ResponseEntity<Object> deleteFollow(@PathVariable Long followerId, @PathVariable Long followedUserId){
+        try {
+            followService.deleteFollowById(followerId, followedUserId);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
 
 }

@@ -87,19 +87,10 @@ public class FollowRequestService {
     }
 
     public void cancelPendingFollowRequest(Long followerId, Long followedUserId) {
-        Optional<FollowRequest> optionalFollowRequest = followRequestRepository.findByFollowerIdAndFollowedUserIdAndStatus(followerId, followedUserId, RequestStatus.PENDING);
+        FollowRequest followRequest = followRequestRepository.findByFollowerIdAndFollowedUserIdAndStatus(followerId, followedUserId, RequestStatus.PENDING)
+                .orElseThrow(() -> new IllegalArgumentException("Pending follow request not found"));
 
-        if (optionalFollowRequest.isPresent()) {
-            FollowRequest followRequest = optionalFollowRequest.get();
-            followRequestRepository.delete(followRequest);
-        } else {
-            throw new IllegalArgumentException("Pending follow request not found");
-        }
+        followRequestRepository.delete(followRequest);
     }
-
-
-
-
-
 }
 
