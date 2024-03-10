@@ -34,9 +34,6 @@ public class FollowService {
         response.setFollowerUserName(follow.getFollower().getUserName());
         response.setFollowerUserId(follow.getFollower().getId());
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss",Locale.getDefault());
-        String formattedDate= dateFormat.format(follow.getCreateDate());
-        response.setFormattedDate(formattedDate);
         response.setCreateDate(follow.getCreateDate()); //date formatının orijinale çekilmesi durumunda kullanılacak
 
         return response;
