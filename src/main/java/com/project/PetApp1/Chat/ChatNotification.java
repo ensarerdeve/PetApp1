@@ -2,8 +2,7 @@ package com.project.PetApp1.Chat;
 
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder

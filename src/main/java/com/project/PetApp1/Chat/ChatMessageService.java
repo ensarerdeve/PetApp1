@@ -9,8 +9,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class ChatMessageService {
-    private ChatMessageRepository chatMessageRepository;
-    private ChatRoomService chatRoomService;
+    private final ChatMessageRepository chatMessageRepository;
+    private final ChatRoomService chatRoomService;
 
     public ChatMessage save(ChatMessage chatMessage){
         var chatId = chatRoomService.getChatRoomId(
