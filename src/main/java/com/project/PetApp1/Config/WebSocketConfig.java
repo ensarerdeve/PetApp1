@@ -22,7 +22,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/user");
         registry.setApplicationDestinationPrefixes("/app");
-        registry.setUserDestinationPrefix(("/user"));
+        registry.setUserDestinationPrefix("/user");
     }
 
     @Override
@@ -38,7 +38,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         converter.setObjectMapper(new ObjectMapper());
         converter.setContentTypeResolver(resolver);
         messageConverters.add(converter);
-
         return false;
     }
 }
