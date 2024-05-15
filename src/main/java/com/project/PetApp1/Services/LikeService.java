@@ -1,8 +1,8 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.Like;
-import com.project.PetApp1.Entities.Post;
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.Like;
+import com.project.PetApp1.Models.Post;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Repositories.LikeRepository;
 import com.project.PetApp1.Repositories.PostRepository;
 import com.project.PetApp1.Requests.LikeCreateRequest;

@@ -1,6 +1,6 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.*;
+import com.project.PetApp1.Models.*;
 import com.project.PetApp1.Exceptions.UserNotFoundException;
 import com.project.PetApp1.Repositories.*;
 import com.project.PetApp1.Requests.PostCreateRequest;

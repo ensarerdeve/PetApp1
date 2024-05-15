@@ -1,4 +1,4 @@
-package com.project.PetApp1.Entities;
+package com.project.PetApp1.Models;
 
 
 import jakarta.persistence.*;
@@ -66,11 +66,13 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
-
     @Column(name = "profile_lock")
     boolean profileLock = false;
 
     @OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FollowRequest> followRequests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    Set<Pet> pets; //petleri user tablosunda goruntuleme
 
 }

@@ -1,8 +1,7 @@
 package com.project.PetApp1.Responses;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.project.PetApp1.Entities.Like;
-import com.project.PetApp1.Entities.Post;
+import com.project.PetApp1.Models.Post;
 import lombok.Data;
 import java.util.Date;
 

@@ -1,7 +1,7 @@
 package com.project.PetApp1.Controllers;
 
-import com.project.PetApp1.Entities.RefreshToken;
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.RefreshToken;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Repositories.UserRepository;
 import com.project.PetApp1.Requests.RefreshRequest;
 import com.project.PetApp1.Requests.UserCreateRequest;
@@ -21,10 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 
 @RestController

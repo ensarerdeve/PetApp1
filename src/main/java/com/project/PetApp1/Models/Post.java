@@ -1,6 +1,5 @@
-package com.project.PetApp1.Entities;
+package com.project.PetApp1.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
@@ -10,22 +9,25 @@ import java.util.Date;
 
 @Entity
 @Data
-@Table(name = "refresh_token")
-public class RefreshToken {
+@Table(name = "post")
+public class Post {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIgnore
     User user;
 
-    @Column(nullable = false, unique = true)
-    String token;
+    @Lob
+    String photo;
 
-    @Column
+    @Lob
+    @Column(columnDefinition = "text")
+    String text;
+
     @Temporal(TemporalType.TIMESTAMP)
-    Date expiryDate;
+    Date createDate;
 }

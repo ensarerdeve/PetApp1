@@ -1,4 +1,5 @@
-package com.project.PetApp1.Entities;
+package com.project.PetApp1.Models;
+
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -9,21 +10,24 @@ import org.hibernate.annotations.OnDeleteAction;
 import java.util.Date;
 
 @Entity
+@Table(name = "comment")
 @Data
-@Table(name = "post")
-public class Post {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
     Long id;
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "user_id",nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id",nullable = false)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    User user;
+    @JsonIgnore
+    Post post;
 
-    @Lob
-    String photo;
+    @ManyToOne(fetch = FetchType.LAZY)//post objesini çektiğinde user'ı hemen çekme demek
+    @JoinColumn(name = "user_id",nullable = false)
+    @OnDelete(action = OnDeleteAction.CASCADE)//bir user silindiğinde ilgili tüm commentlerini sil
+    @JsonIgnore
+    User user;
 
     @Lob
     @Column(columnDefinition = "text")

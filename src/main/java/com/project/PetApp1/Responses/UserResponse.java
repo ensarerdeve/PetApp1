@@ -1,6 +1,5 @@
 package com.project.PetApp1.Responses;
 
-import com.project.PetApp1.Entities.Follow;
 import lombok.Data;
 
 import java.util.Set;
