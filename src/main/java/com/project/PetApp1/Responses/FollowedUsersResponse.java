@@ -10,5 +10,6 @@ public class FollowedUsersResponse {
     private Long userId;
     private Set<FollowResponse> following;
     private List<PostResponse> posts;
+    private List<PetResponse> pets;
 
 }

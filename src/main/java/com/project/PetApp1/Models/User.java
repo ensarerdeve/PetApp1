@@ -19,6 +19,10 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(exclude = {"following", "followed"})
 public class User {
+    @Override
+    public String toString() {
+        return "User{id=" + id + ", userName='" + userName + "'}";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -73,6 +77,6 @@ public class User {
     private List<FollowRequest> followRequests = new ArrayList<>();
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
-    Set<Pet> pets; //petleri user tablosunda goruntuleme
+    List<Pet> pets;
 
 }

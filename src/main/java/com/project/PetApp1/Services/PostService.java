@@ -1,6 +1,7 @@
 package com.project.PetApp1.Services;
 
 import com.project.PetApp1.Models.*;
+import org.hibernate.Hibernate;
 import com.project.PetApp1.Exceptions.UserNotFoundException;
 import com.project.PetApp1.Repositories.*;
 import com.project.PetApp1.Requests.PostCreateRequest;
@@ -21,6 +22,7 @@ public class PostService {
     private PostRepository postRepository;
     private UserService userService;
     private CommentRepository commentRepository;
+    private PetRepository petRepository;
 
     @Autowired
     @Lazy
@@ -33,13 +35,14 @@ public class PostService {
 
     private String uploadDirectory = "C:\\Users\\aytug\\OneDrive\\Masaüstü\\foto";
     @Autowired
-    public PostService(FollowRepository followRepository, PostRepository postRepository, UserService userService, CommentRepository commentRepository, CommentService commentService, UserRepository userRepository) {
+    public PostService(PetRepository petRepository, FollowRepository followRepository, PostRepository postRepository, UserService userService, CommentRepository commentRepository, CommentService commentService, UserRepository userRepository) {
         this.commentRepository = commentRepository;
         this.postRepository = postRepository;
         this.userService = userService;
         this.commentService =commentService;
         this.userRepository = userRepository;
         this.followRepository = followRepository;
+        this.petRepository = petRepository;
     }
 
     @Autowired
@@ -47,7 +50,7 @@ public class PostService {
         this.likeService = likeService;
     }
 
-    public List<PostResponse> getAllPosts() {
+    /*public List<PostResponse> getAllPosts() {
         List<Post> list = postRepository.findAll();
 
         return list.stream().map(p -> {
@@ -59,7 +62,7 @@ public class PostService {
 
             return new PostResponse(p, likes, commentResponses);
         }).collect(Collectors.toList());
-    }
+    }*/
 
     public List<PostResponse> getOnePostByUserId(Long userId) {
         List<Post> list = postRepository.findByUserId(userId);
@@ -70,34 +73,63 @@ public class PostService {
             List<CommentResponse> commentResponses = comments.stream()
                     .map(comment -> new CommentResponse(comment.getId(), comment.getText(), comment.getUser().getUserName(), comment.getPost().getId()))
                     .collect(Collectors.toList());
-            return new PostResponse(p, likes, commentResponses);
+            List<Pet> pets = p.getPets();
+            List<PetResponse> petResponses = pets.stream()
+                    .map(pet -> new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(), null))
+                    .collect(Collectors.toList());
+
+            return new PostResponse(p, likes, commentResponses, petResponses);
         }).collect(Collectors.toList());
-
-
     }
+
+
 
     public PostResponse getOnePostByPostId(Long postId) {
         Post post = postRepository.findById(postId).orElse(null);
-        List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null),Optional.of(postId));
+        List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(postId));
         List<CommentResponse> comments = commentService.getAllCommentsByPostId(postId);
-        return new PostResponse(post,likes,comments);
+        List<PetResponse> petResponses = new ArrayList<>();
+        for (Pet pet : post.getPets()) {
+            petResponses.add(new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(),
+                    pet.getPosts().stream().map(Post::getId).collect(Collectors.toList())));
+        }
+        return new PostResponse(post, likes, comments, petResponses);
     }
-    
+
+
+
     public PostResponse createOnePost(PostCreateRequest newPostRequest, MultipartFile media) throws IOException {
         User user = userService.getOneUserById(newPostRequest.getUserId());
         if (user != null) {
             String mediaPath = uploadDirectory + File.separator + media.getOriginalFilename();
-            media.transferTo(new File(mediaPath)); // Dosyayı kopyala
+            media.transferTo(new File(mediaPath));
+
+            List<Pet> pets = new ArrayList<>();
+            for (Long id : newPostRequest.getPetId()) {
+                Pet pet = petRepository.findById(id).orElse(null);
+                if (pet != null) {
+                    pets.add(pet);
+                } else {
+                    return null;
+                }
+            }
             Post postToSave = new Post();
             postToSave.setText(newPostRequest.getText());
             postToSave.setUser(user);
             postToSave.setPhoto(mediaPath);
-            Post savedPost = postRepository.save(postToSave);
-            return new PostResponse(savedPost);
+            postToSave.setPets(pets);
+            postToSave.setCreateDate(new Date());
+            for (Pet pet : pets) {
+                pet.getPosts().add(postToSave);
+                postRepository.save(postToSave);
+            }
+            return new PostResponse(postToSave);
         } else {
-            return null; // Kullanıcı bulunamadı
+            return null; // User not found
         }
     }
+
+
 
 
     public PostResponse updateOnePostById(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile media) throws IOException {
@@ -112,12 +144,25 @@ public class PostService {
                 media.transferTo(new File(mediaPath)); // Dosyayı kopyala
                 postToUpdate.setPhoto(mediaPath);
             }
+            if (postUpdateRequest.getPetIds() != null && !postUpdateRequest.getPetIds().isEmpty()) {
+                List<Pet> pets = new ArrayList<>();
+                for (Long id : postUpdateRequest.getPetIds()) {
+                    Pet pet = petRepository.findById(id).orElse(null);
+                    if (pet != null) {
+                        pets.add(pet);
+                    } else {
+                        return null;
+                    }
+                }
+                postToUpdate.setPets(pets);
+            }
             Post updatedPost = postRepository.save(postToUpdate);
             return new PostResponse(updatedPost);
         } else {
             return null; // Gönderi bulunamadı
         }
     }
+
 
     public void deleteOnePostById(Long postId) {
         postRepository.deleteById(postId);
@@ -134,22 +179,29 @@ public class PostService {
                 List<PostResponse> postResponses = new ArrayList<>();
                 User followedUser = follow.getFollowedUser();
                 List<Post> posts = postRepository.findByUserId(followedUser.getId());
-                for (Post post : posts) {
-                    List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.of(user.getId()), Optional.of(post.getId()));
-                    List<CommentResponse> comments = commentService.getAllCommentsByPostId(post.getId());
-                    postResponses.add(new PostResponse(post, likes, comments));
+                List<PetResponse> petResponses = null;
+                for (Post innerPost : posts) {
+                    List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.of(user.getId()),
+                            Optional.of(innerPost.getId()));
+                    List<CommentResponse> comments = commentService.getAllCommentsByPostId(innerPost.getId());
+                    List<Pet> pets = petRepository.findByUserId(followedUser.getId());
+                    petResponses = new ArrayList<>();
+                    for (Pet pet : pets) {
+                        petResponses.add(new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(),
+                                pet.getPosts().stream().map(post -> post.getId()).collect(Collectors.toList())));
+                    }
+                    postResponses.add(new PostResponse(innerPost, likes, comments, petResponses));
                 }
-                FollowedUsersResponse response = mapToFollowedUsersResponse(user, follow, postResponses);
+                FollowedUsersResponse response = mapToFollowedUsersResponse(user, follow, postResponses, petResponses);
                 responses.add(response);
             }
-
             return responses;
         } else {
-            throw new UserNotFoundException("Kullanıcı bulunamadı." + userId);
+            throw new UserNotFoundException("Kullanıcı bulunamadı. ID: " + userId);
         }
     }
 
-    public FollowedUsersResponse mapToFollowedUsersResponse(User user, Follow follow, List<PostResponse> posts) {
+    public FollowedUsersResponse mapToFollowedUsersResponse(User user, Follow follow, List<PostResponse> posts, List<PetResponse> pets) {
         FollowedUsersResponse response = new FollowedUsersResponse();
         response.setUserId(user.getId());
 
@@ -162,6 +214,7 @@ public class PostService {
 
         response.setFollowing(followResponses);
         response.setPosts(posts);
+        response.setPets(pets);
 
         return response;
     }
