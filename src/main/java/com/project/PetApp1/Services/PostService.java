@@ -85,16 +85,41 @@ public class PostService {
 
 
     public PostResponse getOnePostByPostId(Long postId) {
+        // Belirtilen posta ait veriyi al, yoksa null döndür
         Post post = postRepository.findById(postId).orElse(null);
-        List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(postId));
-        List<CommentResponse> comments = commentService.getAllCommentsByPostId(postId);
-        List<PetResponse> petResponses = new ArrayList<>();
-        for (Pet pet : post.getPets()) {
-            petResponses.add(new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(),
-                    pet.getPosts().stream().map(Post::getId).collect(Collectors.toList())));
+
+        if (post != null && post.getPets() != null) {
+            // Postun beğenilerini al, varsa beğenileri getir, yoksa boş liste oluştur
+            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(postId));
+
+            // Postun yorumlarını al, varsa yorumları getir, yoksa boş liste oluştur
+            List<CommentResponse> comments = commentService.getAllCommentsByPostId(postId);
+
+            // Postun petlerini al, varsa petleri getir, yoksa boş liste oluştur
+            List<PetResponse> petResponses = new ArrayList<>();
+
+            for (Pet pet : post.getPets()) {
+                // Debug logları ekleyin
+                System.out.println("Pet ID: " + pet.getId());
+                System.out.println("Pet Name: " + pet.getPetName());
+                System.out.println("User ID: " + pet.getUser().getId());
+                System.out.println("Post IDs: " + pet.getPosts().stream().map(Post::getId).collect(Collectors.toList()));
+
+                petResponses.add(new PetResponse(
+                        pet.getId(),
+                        pet.getPetName(),
+                        pet.getUser().getId(),
+                        pet.getPosts().stream().map(Post::getId).collect(Collectors.toList())
+                ));
+            }
+
+            // Post yanıtını oluştur ve döndür
+            return new PostResponse(post, likes, comments, petResponses);
+        } else {
+            return null;
         }
-        return new PostResponse(post, likes, comments, petResponses);
     }
+
 
 
 
