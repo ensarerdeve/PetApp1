@@ -28,6 +28,10 @@ public class CommentController {
     public CommentResponse getOneComment(@PathVariable Long commentId){
         return commentService.getOneCommentById(commentId);
     }
+    @GetMapping("/postId/{postId}")
+    public List<CommentResponse> getCommentByPostId(@PathVariable Long postId){
+        return commentService.getAllCommentsByPostId(postId);
+    }
 
     @PostMapping
     public Comment createOneComment(@RequestBody CommentCreateRequest request){
