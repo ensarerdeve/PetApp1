@@ -2,6 +2,7 @@ package com.project.PetApp1.Responses;
 
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 @Data
 public class UserResponse {
@@ -17,5 +18,5 @@ public class UserResponse {
      Set<FollowResponse> followers;
      Set<FollowResponse> following;
      boolean profileLock;
-
+     List<PetResponse> pets;
 }
