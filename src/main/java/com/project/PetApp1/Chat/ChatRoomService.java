@@ -16,7 +16,7 @@ public class ChatRoomService {
     ) {
         return chatRoomRepository
                 .findBySenderIdAndRecipientId(senderId, recipientId)
-                .map(ChatRoom::getChatId)
+                .map(ChatRoomModel::getChatId)
                 .or(() -> {
                     if(createNewRoomIfNotExists) {
                         var chatId = createChatId(senderId, recipientId);
@@ -29,16 +29,16 @@ public class ChatRoomService {
     private String createChatId(String senderId, String recipientId) {
         var chatId = String.format("%s_%s", senderId, recipientId);
 
-        ChatRoom senderRecipient = ChatRoom
+        ChatRoomModel senderRecipient = ChatRoomModel
                 .builder()
-                .chatId(chatId)
+                .id(chatId)
                 .senderId(senderId)
                 .recipientId(recipientId)
                 .build();
 
-        ChatRoom recipientSender = ChatRoom
+        ChatRoomModel recipientSender = ChatRoomModel
                 .builder()
-                .chatId(chatId)
+                .id(chatId)
                 .senderId(recipientId)
                 .recipientId(senderId)
                 .build();
