@@ -1,6 +1,6 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Repositories.UserRepository;
 import com.project.PetApp1.Security.JwtUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;

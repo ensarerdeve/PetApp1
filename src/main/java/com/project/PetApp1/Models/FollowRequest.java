@@ -1,4 +1,4 @@
-package com.project.PetApp1.Entities;
+package com.project.PetApp1.Models;
 
 import com.project.PetApp1.Requests.RequestStatus;
 import jakarta.persistence.*;

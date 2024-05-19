@@ -1,6 +1,6 @@
 package com.project.PetApp1.Responses;
 
-import com.project.PetApp1.Entities.Like;
+import com.project.PetApp1.Models.Like;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;

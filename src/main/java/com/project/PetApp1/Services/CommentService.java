@@ -1,15 +1,14 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.Comment;
-import com.project.PetApp1.Entities.Post;
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.Comment;
+import com.project.PetApp1.Models.Post;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Repositories.CommentRepository;
 import com.project.PetApp1.Repositories.PostRepository;
 import com.project.PetApp1.Requests.CommentCreateRequest;
 import com.project.PetApp1.Requests.CommentUpdateRequest;
 import com.project.PetApp1.Responses.CommentResponse;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Date;
 import java.util.List;

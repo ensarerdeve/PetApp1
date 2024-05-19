@@ -1,6 +1,6 @@
 package com.project.PetApp1.Controllers;
 
-import com.project.PetApp1.Entities.Comment;
+import com.project.PetApp1.Models.Comment;
 import com.project.PetApp1.Requests.CommentCreateRequest;
 import com.project.PetApp1.Requests.CommentUpdateRequest;
 import com.project.PetApp1.Responses.CommentResponse;
@@ -8,7 +8,6 @@ import com.project.PetApp1.Services.CommentService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/comments")
@@ -28,6 +27,10 @@ public class CommentController {
     @GetMapping("/{commentId}")
     public CommentResponse getOneComment(@PathVariable Long commentId){
         return commentService.getOneCommentById(commentId);
+    }
+    @GetMapping("/postId/{postId}")
+    public List<CommentResponse> getCommentByPostId(@PathVariable Long postId){
+        return commentService.getAllCommentsByPostId(postId);
     }
 
     @PostMapping

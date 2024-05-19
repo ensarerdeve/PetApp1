@@ -1,6 +1,6 @@
 package com.project.PetApp1.Repositories;
 
-import com.project.PetApp1.Entities.Comment;
+import com.project.PetApp1.Models.Comment;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
