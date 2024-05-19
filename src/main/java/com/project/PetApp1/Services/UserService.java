@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
 
-    private String ppStorage = "C:\\Users\\burak\\OneDrive\\Masaüstü\\source";
+    private String ppStorage = "C:\\src\\projects\\source";
 
     private UserRepository userRepository;
     private LikeRepository likeRepository;
