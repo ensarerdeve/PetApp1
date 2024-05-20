@@ -1,11 +1,9 @@
-package com.project.PetApp1.Entities;
+package com.project.PetApp1.Models;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.Objects;
 
 @Entity
 @Table(name = "follow")

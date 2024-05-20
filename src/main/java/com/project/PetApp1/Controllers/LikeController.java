@@ -1,6 +1,6 @@
 package com.project.PetApp1.Controllers;
 
-import com.project.PetApp1.Entities.Like;
+import com.project.PetApp1.Models.Like;
 import com.project.PetApp1.Requests.LikeCreateRequest;
 import com.project.PetApp1.Responses.LikeResponse;
 import com.project.PetApp1.Services.LikeService;

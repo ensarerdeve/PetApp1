@@ -1,18 +1,22 @@
-package com.project.PetApp1.Entities;
+package com.project.PetApp1.Models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.PetApp1.Responses.PetResponse;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Data
 @Table(name = "post")
 public class Post {
-
+    @Override
+    public String toString() {
+        return "Post{id=" + id + ", text='" + text + "'}";
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -31,4 +35,7 @@ public class Post {
 
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
+
+    @ManyToMany(mappedBy = "posts")
+    List<Pet> pets;
 }

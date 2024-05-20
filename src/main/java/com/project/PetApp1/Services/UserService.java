@@ -1,12 +1,15 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.Follow;
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.Follow;
+import com.project.PetApp1.Models.Pet;
+import com.project.PetApp1.Models.Post;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Exceptions.UserNotFoundException;
 import com.project.PetApp1.Repositories.*;
 import com.project.PetApp1.Requests.UserCreateRequest;
 import com.project.PetApp1.Requests.UserUpdateRequest;
 import com.project.PetApp1.Responses.FollowResponse;
+import com.project.PetApp1.Responses.PetResponse;
 import com.project.PetApp1.Responses.UserResponse;
 import com.project.PetApp1.Responses.UserSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,15 +36,17 @@ public class UserService {
     private CommentRepository commentRepository;
     private FollowRepository followRepository;
     private PasswordEncoder passwordEncoder;
+    private PetRepository petRepository;
 
     @Autowired
-    public UserService(PasswordEncoder passwordEncoder,UserRepository userRepository, LikeRepository likeRepository, PostRepository postRepository, CommentRepository commentRepository, FollowRepository followRepository) {
+    public UserService(PetRepository petRepository , PasswordEncoder passwordEncoder,UserRepository userRepository, LikeRepository likeRepository, PostRepository postRepository, CommentRepository commentRepository, FollowRepository followRepository) {
         this.userRepository = userRepository;
         this.likeRepository = likeRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.followRepository = followRepository;
         this.passwordEncoder = passwordEncoder;
+        this.petRepository = petRepository;
     }
 
     public UserService(UserRepository userRepository, FollowRepository followRepository) {
@@ -193,6 +197,7 @@ public class UserService {
         response.setPhoto(user.getPhoto());
         response.setProfileLock(user.isProfileLock());
 
+
         Set<FollowResponse> followingResponse = follows.stream()
                 .map(follow -> {
                     FollowResponse followResponse = new FollowResponse();
@@ -222,7 +227,12 @@ public class UserService {
 
         response.setFollowing(followingResponse);
         response.setFollowers(followerResponse);
+        List<PetResponse> petResponses = user.getPets().stream()
+                .map(pet -> new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(),
+                        pet.getPosts().stream().map(Post::getId).collect(Collectors.toList())))
+                .collect(Collectors.toList());
 
+        response.setPets(petResponses);
         return response;
     }
 

@@ -1,6 +1,6 @@
 package com.project.PetApp1.Security;
 
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.User;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;

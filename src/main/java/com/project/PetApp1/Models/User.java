@@ -1,4 +1,4 @@
-package com.project.PetApp1.Entities;
+package com.project.PetApp1.Models;
 
 
 import jakarta.persistence.*;
@@ -19,6 +19,10 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(exclude = {"following", "followed"})
 public class User {
+    @Override
+    public String toString() {
+        return "User{id=" + id + ", userName='" + userName + "'}";
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -66,11 +70,13 @@ public class User {
     @Temporal(TemporalType.TIMESTAMP)
     Date createDate;
 
-
     @Column(name = "profile_lock")
     boolean profileLock = false;
 
     @OneToMany(mappedBy = "followedUser", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FollowRequest> followRequests = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
+    List<Pet> pets;
 
 }

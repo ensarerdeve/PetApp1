@@ -1,7 +1,7 @@
 package com.project.PetApp1.Controllers;
 
-import com.project.PetApp1.Entities.FollowRequest;
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.FollowRequest;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Responses.FollowRequestResponse;
 import com.project.PetApp1.Services.FollowRequestService;
 import com.project.PetApp1.Services.UserService;

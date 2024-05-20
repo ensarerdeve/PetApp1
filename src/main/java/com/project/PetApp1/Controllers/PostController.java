@@ -1,6 +1,5 @@
 package com.project.PetApp1.Controllers;
 
-import com.project.PetApp1.Entities.Post;
 import com.project.PetApp1.Requests.PostCreateRequest;
 import com.project.PetApp1.Requests.PostUpdateRequest;
 import com.project.PetApp1.Responses.FollowedUsersResponse;
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/posts")
@@ -26,11 +24,11 @@ import java.util.Optional;
         this.postService = postService;
     }
 
-    @GetMapping
+    /*@GetMapping
     public List<PostResponse> getAllPosts(){
         return postService.getAllPosts();
 
-    }
+    }*/
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> createOnePost(@ModelAttribute PostCreateRequest newPostRequest,

@@ -1,8 +1,8 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.Follow;
-import com.project.PetApp1.Entities.FollowRequest;
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.Follow;
+import com.project.PetApp1.Models.FollowRequest;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Repositories.FollowRepository;
 import com.project.PetApp1.Repositories.FollowRequestRepository;
 import com.project.PetApp1.Repositories.UserRepository;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service

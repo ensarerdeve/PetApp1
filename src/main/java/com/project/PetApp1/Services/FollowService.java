@@ -1,14 +1,13 @@
 package com.project.PetApp1.Services;
 
-import com.project.PetApp1.Entities.Follow;
-import com.project.PetApp1.Entities.User;
+import com.project.PetApp1.Models.Follow;
+import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Repositories.FollowRepository;
 import com.project.PetApp1.Requests.FollowCreateRequest;
 import com.project.PetApp1.Responses.FollowResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
