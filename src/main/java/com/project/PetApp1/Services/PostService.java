@@ -83,6 +83,38 @@ public class PostService {
             return new PostResponse(p, likes, commentResponses, petResponses);
         }).collect(Collectors.toList());
     }
+    public List<FollowedUsersResponse> getPostsOfUsersFollows(Long userId) {
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            Set<Follow> follows = followRepository.findByFollowerId(user.getId());
+
+            List<FollowedUsersResponse> responses = new ArrayList<>();
+            for (Follow follow : follows) {
+                List<PostResponse> postResponses = new ArrayList<>();
+                User followedUser = follow.getFollowedUser();
+                List<Post> posts = postRepository.findByUserId(followedUser.getId());
+                for (Post innerPost : posts) {
+                    List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.of(user.getId()),
+                            Optional.of(innerPost.getId()));
+                    List<CommentResponse> comments = commentService.getAllCommentsByPostId(innerPost.getId());
+                    
+                    List<Pet> pets = innerPost.getPets();
+                    List<PetResponse> petResponses = pets.stream()
+                            .map(pet -> new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(), null))
+                            .collect(Collectors.toList());
+
+                    postResponses.add(new PostResponse(innerPost, likes, comments, petResponses));
+                }
+                FollowedUsersResponse response = mapToFollowedUsersResponse(user, follow, postResponses, null);
+                responses.add(response);
+            }
+            return responses;
+        } else {
+            throw new UserNotFoundException("Kullanıcı bulunamadı. ID: " + userId);
+        }
+    }
+
 
 
 
@@ -195,38 +227,6 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    public List<FollowedUsersResponse> getPostsOfUsersFollows(Long userId) {
-        Optional<User> userOptional = userRepository.findById(userId);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            Set<Follow> follows = followRepository.findByFollowerId(user.getId());
-
-            List<FollowedUsersResponse> responses = new ArrayList<>();
-            for (Follow follow : follows) {
-                List<PostResponse> postResponses = new ArrayList<>();
-                User followedUser = follow.getFollowedUser();
-                List<Post> posts = postRepository.findByUserId(followedUser.getId());
-                List<PetResponse> petResponses = null;
-                for (Post innerPost : posts) {
-                    List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.of(user.getId()),
-                            Optional.of(innerPost.getId()));
-                    List<CommentResponse> comments = commentService.getAllCommentsByPostId(innerPost.getId());
-                    List<Pet> pets = petRepository.findByUserId(followedUser.getId());
-                    petResponses = new ArrayList<>();
-                    for (Pet pet : pets) {
-                        petResponses.add(new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(),
-                                pet.getPosts().stream().map(post -> post.getId()).collect(Collectors.toList())));
-                    }
-                    postResponses.add(new PostResponse(innerPost, likes, comments, petResponses));
-                }
-                FollowedUsersResponse response = mapToFollowedUsersResponse(user, follow, postResponses, petResponses);
-                responses.add(response);
-            }
-            return responses;
-        } else {
-            throw new UserNotFoundException("Kullanıcı bulunamadı. ID: " + userId);
-        }
-    }
 
     public FollowedUsersResponse mapToFollowedUsersResponse(User user, Follow follow, List<PostResponse> posts, List<PetResponse> pets) {
         FollowedUsersResponse response = new FollowedUsersResponse();
