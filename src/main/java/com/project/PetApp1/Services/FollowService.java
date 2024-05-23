@@ -33,7 +33,7 @@ public class FollowService {
         response.setFollowerUserName(follow.getFollower().getUserName());
         response.setFollowerUserId(follow.getFollower().getId());
 
-        response.setCreateDate(follow.getCreateDate()); //date formatının orijinale çekilmesi durumunda kullanılacak
+        response.setCreateDate(follow.getCreateDate());
 
         return response;
     }
