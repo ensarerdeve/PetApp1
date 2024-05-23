@@ -9,6 +9,6 @@ import lombok.*;
 public class ChatNotification {
     private String id;
     private String senderId;
-    private String recepientId;
+    private String recipientId;
     private String content;
 }

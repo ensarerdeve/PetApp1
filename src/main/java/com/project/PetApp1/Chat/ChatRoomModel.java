@@ -13,7 +13,7 @@ import lombok.*;
 @Entity
 @Table(name = "chatRoom")
 @Data
-public class ChatRoom {
+public class ChatRoomModel {
     @Id
     private String id;
     private String chatId;
