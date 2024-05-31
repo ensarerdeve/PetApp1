@@ -9,10 +9,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 import com.google.cloud.firestore.WriteResult;
@@ -132,5 +129,53 @@ public class ChatService {
                     );
                 })
                 .collect(Collectors.toList());
+    }
+    public List<Message> getMessagesBetweenUsers(String userId1, String userId2) throws ExecutionException, InterruptedException {
+        List<Message> messagesSentByUser1 = db.collection("messages")
+                .whereEqualTo("senderId", userId1)
+                .whereEqualTo("receiverId", userId2)
+                .get()
+                .get()
+                .getDocuments()
+                .stream()
+                .map(doc -> {
+                    Map<String, Object> messageData = doc.getData();
+                    long timestamp = Long.parseLong(messageData.get("timestamp").toString());
+                    Date date = new Date(timestamp);
+                    return new Message(
+                            (String) messageData.get("senderId"),
+                            (String) messageData.get("receiverId"),
+                            (String) messageData.get("message"),
+                            date
+                    );
+                })
+                .collect(Collectors.toList());
+
+        List<Message> messagesSentByUser2 = db.collection("messages")
+                .whereEqualTo("senderId", userId2)
+                .whereEqualTo("receiverId", userId1)
+                .get()
+                .get()
+                .getDocuments()
+                .stream()
+                .map(doc -> {
+                    Map<String, Object> messageData = doc.getData();
+                    long timestamp = Long.parseLong(messageData.get("timestamp").toString());
+                    Date date = new Date(timestamp);
+                    return new Message(
+                            (String) messageData.get("senderId"),
+                            (String) messageData.get("receiverId"),
+                            (String) messageData.get("message"),
+                            date
+                    );
+                })
+                .collect(Collectors.toList());
+
+        List<Message> allMessages = new ArrayList<>();
+        allMessages.addAll(messagesSentByUser1);
+        allMessages.addAll(messagesSentByUser2);
+        allMessages.sort(Comparator.comparing(Message::getTimestamp));
+
+        return allMessages;
     }
 }
