@@ -98,7 +98,7 @@ public class PostService {
                     List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.of(user.getId()),
                             Optional.of(innerPost.getId()));
                     List<CommentResponse> comments = commentService.getAllCommentsByPostId(innerPost.getId());
-                    
+
                     List<Pet> pets = innerPost.getPets();
                     List<PetResponse> petResponses = pets.stream()
                             .map(pet -> new PetResponse(pet.getId(), pet.getPetName(), pet.getUser().getId(), null))
