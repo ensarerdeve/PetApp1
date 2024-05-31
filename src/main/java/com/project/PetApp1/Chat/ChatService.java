@@ -178,4 +178,25 @@ public class ChatService {
 
         return allMessages;
     }
+
+    public List<Message> getMessagesByReceiver(String receiverId) throws ExecutionException, InterruptedException {
+        return db.collection("messages")
+                .whereEqualTo("receiverId", receiverId)
+                .get()
+                .get()
+                .getDocuments()
+                .stream()
+                .map(doc -> {
+                    Map<String, Object> messageData = doc.getData();
+                    long timestamp = Long.parseLong(messageData.get("timestamp").toString());
+                    Date date = new Date(timestamp);
+                    return new Message(
+                            (String) messageData.get("senderId"),
+                            (String) messageData.get("receiverId"),
+                            (String) messageData.get("message"),
+                            date
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }
