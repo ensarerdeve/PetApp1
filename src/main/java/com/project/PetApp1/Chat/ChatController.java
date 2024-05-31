@@ -34,8 +34,8 @@ public class ChatController {
     public List<Message> getMessagesBetweenUsers(@PathVariable String userId1, @PathVariable String userId2) throws ExecutionException, InterruptedException {
         return chatService.getMessagesBetweenUsers(userId1, userId2);
     }
-    @GetMapping("/received/{receiverId}")
-    public List<Message> getMessagesByReceiver(@PathVariable String receiverId) throws ExecutionException, InterruptedException {
-        return chatService.getMessagesByReceiver(receiverId);
+    @GetMapping("/messages/{userId}")
+    public List<Message> getMessagesByUser(@PathVariable String userId) throws ExecutionException, InterruptedException {
+        return chatService.getMessagesByUser(userId);
     }
 }

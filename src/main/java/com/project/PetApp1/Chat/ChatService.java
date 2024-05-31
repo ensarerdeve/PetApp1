@@ -179,9 +179,9 @@ public class ChatService {
         return allMessages;
     }
 
-    public List<Message> getMessagesByReceiver(String receiverId) throws ExecutionException, InterruptedException {
-        return db.collection("messages")
-                .whereEqualTo("receiverId", receiverId)
+    public List<Message> getMessagesByUser(String userId) throws ExecutionException, InterruptedException {
+        List<Message> sentMessages = db.collection("messages")
+                .whereEqualTo("senderId", userId)
                 .get()
                 .get()
                 .getDocuments()
@@ -198,5 +198,31 @@ public class ChatService {
                     );
                 })
                 .collect(Collectors.toList());
+
+        List<Message> receivedMessages = db.collection("messages")
+                .whereEqualTo("receiverId", userId)
+                .get()
+                .get()
+                .getDocuments()
+                .stream()
+                .map(doc -> {
+                    Map<String, Object> messageData = doc.getData();
+                    long timestamp = Long.parseLong(messageData.get("timestamp").toString());
+                    Date date = new Date(timestamp);
+                    return new Message(
+                            (String) messageData.get("senderId"),
+                            (String) messageData.get("receiverId"),
+                            (String) messageData.get("message"),
+                            date
+                    );
+                })
+                .collect(Collectors.toList());
+
+        List<Message> allMessages = new ArrayList<>();
+        allMessages.addAll(sentMessages);
+        allMessages.addAll(receivedMessages);
+        allMessages.sort(Comparator.comparing(Message::getTimestamp));
+
+        return allMessages;
     }
 }
