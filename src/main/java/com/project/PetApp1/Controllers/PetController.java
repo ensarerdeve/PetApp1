@@ -42,8 +42,8 @@ public class PetController {
         }
     }
 
-    @DeleteMapping("/{id}")
-    public void DeletePet(@PathVariable Long id){
-        petService.DeletePet(id);
+    @DeleteMapping("/{petId}")
+    public void DeletePet(@PathVariable Long petId){
+        petService.deletePet(petId);
     }
 }

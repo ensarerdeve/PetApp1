@@ -63,9 +63,6 @@
 			<version>3.2.2</version>
 			<scope>test</scope>
 		</dependency>
-
-
-
 		<!-- Runtime, com.sun.xml.bind module -->
 		<dependency>
 			<groupId>org.glassfish.jaxb</groupId>
