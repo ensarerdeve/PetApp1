@@ -1,7 +1,6 @@
 package com.project.PetApp1.Services;
 
 import com.project.PetApp1.Models.*;
-import org.hibernate.Hibernate;
 import com.project.PetApp1.Exceptions.UserNotFoundException;
 import com.project.PetApp1.Repositories.*;
 import com.project.PetApp1.Requests.PostCreateRequest;
@@ -51,20 +50,6 @@ public class PostService {
     public void setLikeService(LikeService likeService) {//like'ı tanımladık çünkü constructorda tanımladığımzda sonsuz döngüye giriyor
         this.likeService = likeService;
     }
-
-    /*public List<PostResponse> getAllPosts() {
-        List<Post> list = postRepository.findAll();
-
-        return list.stream().map(p -> {
-            List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(p.getId()));
-            List<Comment> comments = commentRepository.findByPostId(p.getId());
-            List<CommentResponse> commentResponses = comments.stream()
-                    .map(comment -> new CommentResponse(comment.getId(), comment.getText(), comment.getUser().getUserName(), comment.getPost().getId()))
-                    .collect(Collectors.toList());
-
-            return new PostResponse(p, likes, commentResponses);
-        }).collect(Collectors.toList());
-    }*/
 
     public List<PostResponse> getOnePostByUserId(Long userId) {
         List<Post> list = postRepository.findByUserId(userId);
@@ -119,21 +104,14 @@ public class PostService {
 
 
     public PostResponse getOnePostByPostId(Long postId) {
-        // Belirtilen posta ait veriyi al, yoksa null döndür
         Post post = postRepository.findById(postId).orElse(null);
 
         if (post != null && post.getPets() != null) {
-            // Postun beğenilerini al, varsa beğenileri getir, yoksa boş liste oluştur
             List<LikeResponse> likes = likeService.getAllLikesWithParam(Optional.ofNullable(null), Optional.of(postId));
-
-            // Postun yorumlarını al, varsa yorumları getir, yoksa boş liste oluştur
             List<CommentResponse> comments = commentService.getAllCommentsByPostId(postId);
-
-            // Postun petlerini al, varsa petleri getir, yoksa boş liste oluştur
             List<PetResponse> petResponses = new ArrayList<>();
 
             for (Pet pet : post.getPets()) {
-                // Debug logları ekleyin
                 System.out.println("Pet ID: " + pet.getId());
                 System.out.println("Pet Name: " + pet.getPetName());
                 System.out.println("User ID: " + pet.getUser().getId());
@@ -146,17 +124,11 @@ public class PostService {
                         pet.getPosts().stream().map(Post::getId).collect(Collectors.toList())
                 ));
             }
-
-            // Post yanıtını oluştur ve döndür
             return new PostResponse(post, likes, comments, petResponses);
         } else {
             return null;
         }
     }
-
-
-
-
     public PostResponse createOnePost(PostCreateRequest newPostRequest, MultipartFile media) throws IOException {
         User user = userService.getOneUserById(newPostRequest.getUserId());
         if (user != null) {
@@ -187,10 +159,6 @@ public class PostService {
             return null; // User not found
         }
     }
-
-
-
-
     public PostResponse updateOnePostById(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile media) throws IOException {
         Optional<Post> postOptional = postRepository.findById(postId);
         if (postOptional.isPresent()) {
@@ -218,16 +186,12 @@ public class PostService {
             Post updatedPost = postRepository.save(postToUpdate);
             return new PostResponse(updatedPost);
         } else {
-            return null; // Gönderi bulunamadı
+            return null;
         }
     }
-
-
     public void deleteOnePostById(Long postId) {
         postRepository.deleteById(postId);
     }
-
-
     public FollowedUsersResponse mapToFollowedUsersResponse(User user, Follow follow, List<PostResponse> posts, List<PetResponse> pets) {
         FollowedUsersResponse response = new FollowedUsersResponse();
         response.setUserId(user.getId());
@@ -245,7 +209,14 @@ public class PostService {
 
         return response;
     }
-
+    public void deletePostsByPetId(Long petId) {
+        List<Post> posts = postRepository.findAll();
+        for (Post post : posts) {
+            if (post.getPets().stream().anyMatch(pet -> pet.getId().equals(petId))) {
+                postRepository.delete(post);
+            }
+        }
+    }
 }
 
 

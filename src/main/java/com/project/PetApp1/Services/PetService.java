@@ -1,6 +1,7 @@
 package com.project.PetApp1.Services;
 
 import com.project.PetApp1.Models.Pet;
+import com.project.PetApp1.Models.Post;
 import com.project.PetApp1.Models.User;
 import com.project.PetApp1.Repositories.PetRepository;
 import com.project.PetApp1.Repositories.UserRepository;
@@ -16,9 +17,11 @@ import java.util.stream.Collectors;
 public class PetService {
     private PetRepository petRepository;
     private UserRepository userRepository;
-    public PetService(PetRepository petRepository, UserRepository userRepository) {
+    private PostService postService;
+    public PetService(PetRepository petRepository, UserRepository userRepository, PostService postService) {
         this.petRepository = petRepository;
         this.userRepository = userRepository;
+        this.postService = postService;
     }
     public List<PetResponse> GetOneUsersPets(Long userId){
         List<Pet> pets = petRepository.findByUserId(userId);
@@ -71,7 +74,11 @@ public class PetService {
             throw new RuntimeException("Pet not found");
         }
     }
-    public void DeletePet(Long id){
-        petRepository.deleteById(id);
+    public void deletePet(Long petId) {
+        Pet pet = petRepository.findById(petId).orElse(null);
+        if (pet != null) {
+            postService.deletePostsByPetId(petId);
+            petRepository.deleteById(petId);
+        }
     }
 }
