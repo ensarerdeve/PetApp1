@@ -24,12 +24,6 @@ import java.util.List;
         this.postService = postService;
     }
 
-    /*@GetMapping
-    public List<PostResponse> getAllPosts(){
-        return postService.getAllPosts();
-
-    }*/
-
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostResponse> createOnePost(@ModelAttribute PostCreateRequest newPostRequest,
                                                       @RequestPart(value = "photo", required = false) MultipartFile photo) throws IOException {

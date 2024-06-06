@@ -10,9 +10,11 @@ import java.io.IOException;
 
 @Configuration
 public class FirebaseConfig {
+
     @Bean
     public FirebaseApp initializeFirebase() throws IOException {
-        FileInputStream serviceAccount = new FileInputStream("C:\\Users\\aytug\\OneDrive\\Belgeler\\GitHub\\PetApp1\\src\\main\\resources\\chat-service1-firebase-adminsdk-hplj2-5cbc50ef5e.json");
+        String firebasePath = System.getenv("FIREBASE");
+        FileInputStream serviceAccount = new FileInputStream(firebasePath);
 
         FirebaseOptions options = new FirebaseOptions.Builder()
                 .setCredentials(GoogleCredentials.fromStream(serviceAccount))
