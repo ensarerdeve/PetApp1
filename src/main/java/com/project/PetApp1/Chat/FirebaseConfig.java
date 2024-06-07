@@ -13,7 +13,7 @@ public class FirebaseConfig {
 
     @Bean
     public FirebaseApp initializeFirebase() throws IOException {
-        String firebasePath = System.getenv("FIREBASE");
+        String firebasePath = System.getenv("firebase");
         FileInputStream serviceAccount = new FileInputStream(firebasePath);
 
         FirebaseOptions options = new FirebaseOptions.Builder()

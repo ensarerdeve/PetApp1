@@ -45,7 +45,7 @@ public class PostService {
     }
 
     @Autowired
-    public void setLikeService(LikeService likeService) {//like'ı tanımladık çünkü constructorda tanımladığımzda sonsuz döngüye giriyor
+    public void setLikeService(LikeService likeService) {
         this.likeService = likeService;
     }
 
@@ -154,7 +154,7 @@ public class PostService {
             }
             return new PostResponse(postToSave);
         } else {
-            return null; // User not found
+            return null;
         }
     }
     public PostResponse updateOnePostById(Long postId, PostUpdateRequest postUpdateRequest, MultipartFile media) throws IOException {
@@ -166,7 +166,7 @@ public class PostService {
             }
             if (media != null && !media.isEmpty()) {
                 String mediaPath = uploadDirectory + File.separator + media.getOriginalFilename();
-                media.transferTo(new File(mediaPath)); // Dosyayı kopyala
+                media.transferTo(new File(mediaPath));
                 postToUpdate.setPhoto(mediaPath);
             }
             if (postUpdateRequest.getPetIds() != null && !postUpdateRequest.getPetIds().isEmpty()) {

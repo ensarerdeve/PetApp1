@@ -1,4 +1,3 @@
-# Temel image olarak OpenJDK 17 kullanıyoruz
 FROM openjdk:17-jdk-slim
 
 # Uygulamanın çalışacağı dizini oluşturuyoruz
@@ -15,12 +14,12 @@ RUN mvn clean package -DskipTests
 # Uygulama jar dosyasını kopyalıyoruz
 COPY target/*.jar app.jar
 
-# Ortam değişkenlerini tanımla
-ENV FIREBASE=/home/petdkqsa/photos
-ENV STORAGE=/home/petdkqsa/photos
+# JSON dosyasını kopyala
+COPY src/main/resources/chat-service1-firebase-adminsdk-hplj2-5cbc50ef5e.json /home/petdkqsa/photos/
 
-# Uygulamanın çalıştırılacağı portu belirliyoruz
-EXPOSE 8080
+# Ortam değişkenlerini tanımla
+ENV firebase=/home/petdkqsa/photos/chat-service1-firebase-adminsdk-hplj2-5cbc50ef5e.json
+ENV storage=/home/petdkqsa/photos
 
 # Uygulamayı başlatıyoruz
 ENTRYPOINT ["java", "-jar", "app.jar"]
