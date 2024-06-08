@@ -13,6 +13,7 @@ import com.project.PetApp1.Responses.PetResponse;
 import com.project.PetApp1.Responses.UserResponse;
 import com.project.PetApp1.Responses.UserSearchResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,8 +28,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
-    private String ppStorage = "C:\\src\\projects\\source";
+    @Value("${storage}")
+    private String ppStorage;
 
     private UserRepository userRepository;
     private LikeRepository likeRepository;
@@ -86,14 +87,15 @@ public class UserService {
         newUser.setPassword(newUserRequest.getPassword());
         newUser.setCreateDate(new Date());
         if (photo != null && !photo.isEmpty()) {
-            String newPhotoPath = ppStorage + File.separator + photo.getOriginalFilename();
+            String fileName = newUser.getId() + "_pp.jpg";
+            String newPhotoPath = ppStorage + File.separator + fileName;
             transferFile(photo, newPhotoPath);
-            newUser.setPhoto(newPhotoPath);
+            String photoUrl = "https://petdiary.net/app/" + fileName;
+            newUser.setPhoto(photoUrl);
         }
 
         return userRepository.save(newUser);
     }
-
 
     public List<UserSearchResponse> searchUsersByUsername(String username) {
         List<User> users = userRepository.findByUserNameStartingWith(username);
@@ -114,7 +116,6 @@ public class UserService {
         return response;
     }
 
-
     public User getOneUserById(Long userId) {
         return userRepository.findById(userId).orElse(null);
     }
@@ -131,7 +132,6 @@ public class UserService {
         }
     }
 
-
     public User updateOneUser(Long userId, UserUpdateRequest updateUserRequest, MultipartFile photo) {
         Optional<User> userOptional = userRepository.findById(userId);
 
@@ -145,7 +145,6 @@ public class UserService {
             foundUser.setName(updateUserRequest.getName());
             foundUser.setSurname(updateUserRequest.getSurname());
 
-
             if (!updateUserRequest.getPassword().equals(foundUser.getPassword())) {
                 foundUser.setPassword(passwordEncoder.encode(updateUserRequest.getPassword()));
             }
@@ -155,9 +154,11 @@ public class UserService {
                     File oldFile = new File(foundUser.getPhoto());
                     oldFile.delete();
                 }
-                String newPhotoPath = ppStorage + File.separator + photo.getOriginalFilename();
+                String fileName = foundUser.getId() + "_pp.jpg"; // User ID'si ile dosya adını oluştur
+                String newPhotoPath = ppStorage + File.separator + fileName;
                 transferFile(photo, newPhotoPath);
-                foundUser.setPhoto(newPhotoPath);
+                String photoUrl = "https://petdiary.net/app/" + fileName; // Profil fotoğrafı URL'si
+                foundUser.setPhoto(photoUrl);
             }
 
             foundUser.setCreateDate(new Date());
@@ -169,8 +170,6 @@ public class UserService {
             return null;
         }
     }
-
-
 
     private void transferFile(MultipartFile file, String destinationPath) {
         try {

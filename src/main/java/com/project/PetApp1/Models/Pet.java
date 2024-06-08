@@ -18,7 +18,7 @@ public class Pet {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "pet_posts",
     joinColumns = @JoinColumn(name = "pet_id"),
     inverseJoinColumns = @JoinColumn(name = "post_id"))
